@@ -13,21 +13,39 @@ module RemoteRecord
   #   remote_authorization { instance.user.github_auth_tokens.active.first.token }
   # end
   module DSL
-    def remote_authorization(means = nil, &block)
-      means = block if block_given?
-      @remote_authorization = means
-    end
-
-    def remote_record(&block)
-      define_method(:remote_record) do
+    def remote_record
+      define_method(:remote_record) do |authorization_override = nil|
         instance_exec do
-          @remote_record ||= block.call.new(remote_resource_id, remote_authorization)
+          instance_variable_set('@remote_record',
+                                remote_record_klass.new(
+                                  remote_resource_id, authorization_override.presence || remote_authorization
+                                ))
         end
       end
     end
 
-    def remote_records
-      all.map(&:remote_record)
+    # rubocop:disable Naming/PredicateName
+    def has_remote(resources, through:)
+      define_method(resources) do |authorization_override = nil|
+        instance_exec do
+          instance_variable_set("@#{resources}", send(through).remote_records(authorization_override))
+        end
+      end
+    end
+    # rubocop:enable Naming/PredicateName
+
+    # rubocop:disable Naming/PredicateName
+    def has_a_remote(resource, through:)
+      define_method(resource) do |authorization_override = nil|
+        instance_exec do
+          set_instance_variable("@#{resource}", send(through).remote_record(authorization_override))
+        end
+      end
+    end
+    # rubocop:enable Naming/PredicateName
+
+    def remote_records(args)
+      all.map { |aro| aro.remote_record(args) }
     end
   end
 end

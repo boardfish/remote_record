@@ -45,6 +45,8 @@ module RemoteRecord
 
     private
 
+    attr_accessor :remote_record, :remote_record_klass
+
     # Fetches the record's remote representation and stores it in the class.
     # method_missing makes top-level attributes accessible on the model directly
     # via methods.
