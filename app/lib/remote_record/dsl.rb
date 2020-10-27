@@ -1,38 +1,33 @@
 # frozen_string_literal: true
 
-module RemoteResource
-  # A DSL for constructing RemoteResources. A basic RemoteResource could look
+module RemoteRecord
+  # A DSL for constructing RemoteRecords. A basic RemoteRecord could look
   # like this:
   #
-  # include RemoteResource::Plain extend RemoteResource::DSL
-  #
-  # # Initialize a client that can request the service.
-  # client { faraday_json_client('http://example.com') }
-  # # Define how you'll fetch a hash of attributes for the resource. Here, we're
-  # # requesting example.com?id={id} where {id} is the id of the object.
-  # resource { |client, instance| client.get('/', id: instance.id) }
-  #
-  # # Name an attribute that you'd like to fetch from instances of the remote
-  # # resource.
-  # remote_attribute :name
+  # class UserReference < ApplicationRecord
+  # # Reference a RemoteRecord class that defines the necessary methods to fetch
+  # # the remote resource using the remote reference.
+  #   remote_record { RemoteRecord::GitHub::User }
+  # # Supply a means of authorization. This could come from the environment or
+  # # be scoped to individual users
+  #   remote_authorization { instance.user.github_auth_tokens.active.first.token }
+  # end
   module DSL
-    def authorization(mechanism)
-      define_method(:authorization) { mechanism.respond_to?(:call) ? mechanism.call : mechanism }
+    def remote_authorization(means = nil, &block)
+      means = block if block_given?
+      @remote_authorization = means
     end
 
-    def remote_attribute(new_getter_name, aliased_field = nil, &block)
-      requested_field = aliased_field.presence || new_getter_name
-      define_method(new_getter_name.to_sym) do
-        block_given? ? block.call(attrs[requested_field]) : attrs[requested_field]
+    def remote_record(&block)
+      define_method(:remote_record) do
+        instance_exec do
+          @remote_record ||= block.call.new(remote_resource_id, remote_authorization)
+        end
       end
     end
 
-    def attrs(&block)
-      define_method(:attrs) do
-        raise ArgumentError unless block_given?
-
-        @attrs ||= HashWithIndifferentAccess.new(block.call)
-      end
+    def remote_records
+      all.map(&:remote_record)
     end
   end
 end

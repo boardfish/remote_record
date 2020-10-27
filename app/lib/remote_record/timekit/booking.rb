@@ -1,19 +1,20 @@
 # frozen_string_literal: true
 
 module RemoteRecord
-  module GitHub
+  module TimeKit
     # :nodoc:
-    class User
+    class Booking
       include RemoteRecord::Core
+      extend  RemoteRecord::DSL
 
       private
 
       def client
-        Octokit::Client.new(access_token: authorization)
+        APIServices::TimeKit.new
       end
 
       def get
-        client.user(id)
+        client.booking(id)
       end
     end
   end
