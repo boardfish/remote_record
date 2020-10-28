@@ -13,7 +13,7 @@ module RemoteRecord
       end
 
       def get
-        client.user(id)
+        client.user(id.to_i)
       end
     end
   end
