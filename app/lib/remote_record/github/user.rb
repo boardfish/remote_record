@@ -3,17 +3,15 @@
 module RemoteRecord
   module GitHub
     # :nodoc:
-    class User
-      include RemoteRecord::Core
+    class User < RemoteRecord::Base
+      def get
+        client.user(remote_resource_id)
+      end
 
       private
 
       def client
         Octokit::Client.new(access_token: authorization)
-      end
-
-      def get
-        client.user(id.to_i)
       end
     end
   end

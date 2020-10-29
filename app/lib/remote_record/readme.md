@@ -4,30 +4,38 @@ Ready-made remote resource structures.
 
 ## Setup
 
-In this example, `User`s have `GitHub::UserReference`s, which point at users on
-GitHub's platform.
+### Jargon
+
+**Remote resource** - the resource on the external API that you're trying to
+reach. In this example, we're trying to fetch a GitHub user.
+
+**Reference** - your record that points at the remote resource using its ID. In
+this example, these are `GitHub::UserReference`s.
+
+**Remote record type** - a class that defines the behavior used to fetch the
+remote resource. In this example, it's `RemoteRecord::GitHub::User`.
 
 ### Creating a remote record type
 
 A standard RemoteRecord class looks like this. It should have a `get` method,
-which returns a hash of the data you'd like to query on the user. Supply
-`authorization` and `id` appropriately.
+which returns a hash of the data you'd like to query on the user.
+
+`RemoteRecord::Base` exposes private methods for the `remote_resource_id` and
+`authorization` that you configure on the remote reference.
 
 ```ruby
 module RemoteRecord
   module GitHub
     # :nodoc:
-    class User
-      include RemoteRecord::Core
+    class User < RemoteRecord::Base
+      def get
+        client.user(remote_resource_id)
+      end
 
       private
 
       def client
         Octokit::Client.new(access_token: authorization)
-      end
-
-      def get
-        client.user(id.to_i)
       end
     end
   end
@@ -36,33 +44,29 @@ end
 
 ### Creating a remote reference
 
-To start using your remote record type, create an `ActiveRecord::Base` object
-that responds to `remote_resource_id`.
+To start using your remote record type, `include RemoteRecord`. Now, whenever
+you initialize an instance of your class, it'll be fetched.
 
-> Note: Make sure you `extend RemoteRecord::DSL` to get access to RemoteRecord's
-> methods.
+Calling `remote_record` in addition to this lets you set some options:
 
-From there, you're three steps away:
-
-1. Specify that this is a link to a `remote_record`.
-2. Define `remote_authorization`.
-3. Specify the `remote_record_klass` this reference should use.
+| Key           | Default                  | Purpose                                                                   |
+|+-------------+|+------------------------+|+-------------------------------------------------------------------------+|
+| klass         | Inferred from class name | The class to use for fetching attributes                                  |
+| id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID           |
+| authorization | `proc { }`               | The object that your remote record type passes for authorization          |
+| caching       | false                    | (Not yet implemented) Whether RemoteRecord should cache responses for you |
 
 ```ruby
 module GitHub
   # :nodoc:
   class UserReference < ApplicationRecord
     belongs_to :user
-    validates :remote_resource_id, presence: true
-    remote_record
-
-    def remote_authorization
-      user.github_auth_tokens.active.first.token
-    end
-
-    def remote_record_klass
-      RemoteRecord::GitHub::User
-    end
+    include RemoteRecord
+    remote_record \
+      authorization: proc { |reference| reference.user.github_auth_tokens.active.first.token },
+      id_field: :remote_resource_id,
+    # klass: RemoteRecord::GitHub::User, # Inferred from module and class name
+    # caching: false
   end
 end
 ```
@@ -71,45 +75,16 @@ end
 
 Now you've got everything lined up to start using your remote reference.
 
-You can call:
+Whenever a `GitHub::UserReference` is initialized, e.g. by calling:
 
 ```ruby
-user.github_user_reference.remote_record
+user.github_user_references.first
 ```
 
-to return a `RemoteRecord::GitHub::User` that's populated with the GitHub user's
-data. You can call methods that return attributes on the user, like `#login` or
-`#html_url`.
+...it'll be populated with the GitHub user's data. You can call methods that
+return attributes on the user, like `#login` or `#html_url`.
 
-By default, this'll make a request every time you ask for a field. It's the
-responsibility of your `client` to handle caching - I recommend using
-`faraday-http-cache`.
-
-### Association helpers
-
-If you use `has_(a_)remote :through`, you'll get a shortcut straight to the
-remote record through the model. For example, specifying this on the `User`:
-
-```ruby
-has_many :github_user_references
-has_remote :github_users, through: :github_user_references
-```
-
-...will allow you to call this:
-
-```ruby
-user.github_users
-```
-
-...which equates to `user.github_user_references.remote_records`.
-
-### Authorization override
-
-You might've noticed that the `authorization` method we set earlier uses the
-user's active GitHub token. But what if we want to use a single Personal Access
-Token in some instances?
-
-Methods that return remote records can all take a parameter. This is used to
-override authorization when requesting the associated record. So if we wanted to
-use an environment variable sometimes, it's possible to call
-`user.github_users(ENV['GITHUB_ACCESS_TOKEN'])` if necessary.
+By default, this'll make a request every time you ask for a field. For services
+that manage caching by way of expiry or ETags, I recommend using
+`faraday-http-cache` for your clients. Remote Record will eventually gain
+support for caching.
