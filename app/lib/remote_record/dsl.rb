@@ -4,8 +4,8 @@ module RemoteRecord
   # A DSL that's helpful for configuring remote references. See the project
   # README for more on how to use this.
   module DSL
-    def remote_record(options = {})
-      validate(options)
+    def remote_record(**options)
+      validate_remote_record_config(options)
       define_method(:remote_record_config) { options }
     end
 
@@ -26,7 +26,7 @@ module RemoteRecord
       raise NotImplementedError.new, 'The remote record does not implement #get.'
     end
 
-    def validate(options)
+    def validate_remote_record_config(options)
       klass = remote_record_klass(options[:remote_record_klass])
       responds_to_get(klass)
     end

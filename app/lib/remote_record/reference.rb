@@ -24,13 +24,13 @@ module RemoteRecord
     # notation.
     def self.included(record_type)
       super
-      record_type.belongs_to :user
-      record_type.validates  :remote_resource_id, presence: true
-      # rubocop:disable Style/SymbolProc
       record_type.after_initialize do |reference|
+        config = remote_record_klass.config
+                                    .merge(klass: remote_record_klass, id_field: :remote_record_id)
+                                    .merge(remote_record_config)
+        reference.instance_variable_set('@remote_record_options', config)
         reference.fetch_attributes
       end
-      # rubocop:enable Style/SymbolProc
     end
 
     def self.lookup_remote_record_class(*args)
@@ -52,9 +52,6 @@ module RemoteRecord
 
     def initialize(**args)
       @attrs = HashWithIndifferentAccess.new
-      @remote_record_options = remote_record_klass.config
-                                                  .merge(klass: remote_record_klass, id_field: :remote_record_id)
-                                                  .merge(remote_record_config)
       super
     end
 
