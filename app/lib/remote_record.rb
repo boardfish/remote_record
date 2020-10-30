@@ -2,9 +2,13 @@
 
 # Generic interface for resources stored on external services.
 module RemoteRecord
-  def self.included(reference)
-    reference.include Reference
-    reference.extend DSL
+  extend ActiveSupport::Concern
+  included do
+    include Reference
+  end
+
+  class_methods do
+    include DSL
   end
 
   class RecordClassNotFound < StandardError; end

@@ -20,11 +20,10 @@ module RemoteRecord
   #   end
   # end
   module Reference
-    # Allows top-level attributes of the remote record to be accessed using dot
-    # notation.
-    def self.included(record_type)
-      super
-      record_type.after_initialize do |reference|
+    extend ActiveSupport::Concern
+
+    included do
+      after_initialize do |reference|
         config = remote_record_klass.config
                                     .merge(klass: remote_record_klass, id_field: :remote_record_id)
                                     .merge(remote_record_config)
