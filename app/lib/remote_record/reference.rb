@@ -24,9 +24,6 @@ module RemoteRecord
     # notation.
     def self.included(record_type)
       super
-      remote_record_klass = lookup_remote_record_class('RemoteRecord', record_type.to_s.delete_suffix('Reference'))
-      raise 'get not defined' unless remote_record_klass.instance_methods(false).include?(:get)
-
       record_type.belongs_to :user
       record_type.validates  :remote_resource_id, presence: true
       # rubocop:disable Style/SymbolProc
@@ -42,16 +39,8 @@ module RemoteRecord
       raise "Class #{args.join('::')} does not exist. Perhaps you need to specify the remote_record_klass option?"
     end
 
-    def lookup_remote_record_class(*args)
-      args.join('::').constantize
-    rescue NameError
-      raise "Class #{args.join('::')} does not exist. Perhaps you need to specify the remote_record_klass option?"
-    end
-
-    attr_reader :remote_record_options
-
     def method_missing(method_name, *_args, &_block)
-      fetch_attributes unless remote_record_options.fetch(:caching)
+      fetch_attributes unless @remote_record_options.fetch(:caching)
       return super unless @attrs.key?(method_name)
 
       @attrs.fetch(method_name)
@@ -63,7 +52,6 @@ module RemoteRecord
 
     def initialize(**args)
       @attrs = HashWithIndifferentAccess.new
-      remote_record_klass = lookup_remote_record_class('RemoteRecord', self.class.to_s.delete_suffix('Reference'))
       @remote_record_options = remote_record_klass.config
                                                   .merge(klass: remote_record_klass, id_field: :remote_record_id)
                                                   .merge(remote_record_config)
@@ -72,8 +60,16 @@ module RemoteRecord
 
     def fetch_attributes
       @attrs = HashWithIndifferentAccess.new(
-        remote_record_options.fetch(:klass).new(self, @remote_record_options).get
+        @remote_record_options.fetch(:klass).new(self, @remote_record_options).get
       )
+    end
+
+    private
+
+    def remote_record_klass
+      (remote_record_config[:remote_record_klass] || \
+        ['RemoteRecord', self.class.to_s.delete_suffix('Reference')].join('::')
+      ).constantize
     end
   end
 end

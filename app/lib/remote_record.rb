@@ -6,4 +6,6 @@ module RemoteRecord
     reference.include Reference
     reference.extend DSL
   end
+
+  class RecordClassNotFound < StandardError; end
 end
