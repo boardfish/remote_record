@@ -3,16 +3,13 @@
 module RemoteRecord
   # Remote record types should inherit from this class and define #get.
   class Base
-    def self.config
-      {
-        authorization: proc {},
-        caching: false
-      }
+    def self.default_config
+      RemoteRecordConfig.new
     end
 
-    def initialize(reference, **options)
+    def initialize(reference, options)
       @reference = reference
-      @options = options
+      @options = options.presence || default_config
     end
 
     def get
@@ -22,12 +19,12 @@ module RemoteRecord
     private
 
     def authorization
-      authz = @options.fetch(:authorization)
+      authz = @options.authorization
       authz.respond_to?(:call) ? authz.call(@reference, @options) : authz
     end
 
     def remote_resource_id
-      @reference.send(@options.fetch(:id_field))
+      @reference.send(@options.id_field)
     end
   end
 end

@@ -5,9 +5,6 @@ module RemoteRecord
   extend ActiveSupport::Concern
   included do
     include Reference
-  end
-
-  class_methods do
     include DSL
   end
 
