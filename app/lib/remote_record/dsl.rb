@@ -10,7 +10,7 @@ module RemoteRecord
         klass = KlassLookup.new(self).remote_record_klass(options.to_h[:remote_record_klass])
         config = RemoteRecordConfig.new(remote_record_klass: klass, **options)
         validate_remote_record_config(config)
-        define_singleton_method(:config) { ; RemoteRecordConfig.new(options); }
+        define_singleton_method(:config) { RemoteRecordConfig.new(options) }
       end
 
       private
