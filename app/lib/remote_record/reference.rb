@@ -24,18 +24,15 @@ module RemoteRecord
 
     included do
       after_initialize do |reference|
+        remote_record_klass = KlassLookup.new(reference.class).remote_record_klass(
+          remote_record_config[:remote_record_klass]
+        )
         config = remote_record_klass.config
                                     .merge(klass: remote_record_klass, id_field: :remote_record_id)
                                     .merge(remote_record_config)
         reference.instance_variable_set('@remote_record_options', config)
         reference.fetch_attributes
       end
-    end
-
-    def self.lookup_remote_record_class(*args)
-      args.join('::').constantize
-    rescue NameError
-      raise "Class #{args.join('::')} does not exist. Perhaps you need to specify the remote_record_klass option?"
     end
 
     def method_missing(method_name, *_args, &_block)
@@ -58,14 +55,6 @@ module RemoteRecord
       @attrs = HashWithIndifferentAccess.new(
         @remote_record_options.fetch(:klass).new(self, @remote_record_options).get
       )
-    end
-
-    private
-
-    def remote_record_klass
-      (remote_record_config[:remote_record_klass] || \
-        ['RemoteRecord', self.class.to_s.delete_suffix('Reference')].join('::')
-      ).constantize
     end
   end
 end
