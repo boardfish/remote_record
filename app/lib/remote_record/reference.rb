@@ -25,7 +25,7 @@ module RemoteRecord
     # rubocop:disable Metrics/BlockLength
     included do
       after_initialize do |reference|
-        remote_record_klass = KlassLookup.new(reference.class).remote_record_klass(
+        remote_record_klass = ClassLookup.new(reference.class).remote_record_klass(
           reference.class.config.to_h[:remote_record_klass]
         )
         config = remote_record_klass.default_config

@@ -2,17 +2,17 @@
 
 module RemoteRecord
   # Looks up the class name to use to define the remote record's behavior.
-  class KlassLookup
+  class ClassLookup
     def initialize(klass)
       @klass = klass
     end
 
-    def remote_record_klass(option_override = nil)
-      klass_name = (option_override || infer_remote_record_class_name)
+    def remote_record_klass(klass_name_override = nil)
+      klass_name = (klass_name_override || infer_remote_record_class_name)
       klass_name.constantize
     rescue NameError
       raise RemoteRecord::RecordClassNotFound, "#{klass_name} couldn't be found." \
-      "#{' Perhaps you need to define remote_record_klass?' unless option_override}"
+      "#{' Perhaps you need to define remote_record_klass?' unless klass_name_override}"
     end
 
     private

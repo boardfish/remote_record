@@ -7,7 +7,7 @@ module RemoteRecord
   # new remote reference is initialized, its config is constructed using the
   # defaults of the remote record class and the overrides set when
   # `remote_record` is called.
-  class RemoteRecordConfig
+  class Config
     def initialize(**options)
       @options = {
         authorization: proc {},
