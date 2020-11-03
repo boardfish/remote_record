@@ -15,16 +15,13 @@ module RemoteRecord
 
       private
 
-      def responds_to_get(klass)
-        valid = klass.instance_methods(false).include? :get
-        return if valid
-
-        raise NotImplementedError.new, 'The remote record does not implement #get.'
+      def responds_to_get?(klass)
+        klass.instance_methods(false).include? :get
       end
 
       def validate_config(options)
         klass = RemoteRecord::ClassLookup.new(self.class.to_s).remote_record_klass(options.to_h[:remote_record_klass].to_s)
-        responds_to_get(klass)
+        raise NotImplementedError.new, 'The remote record does not implement #get.' unless responds_to_get?(klass)
       end
     end
   end
