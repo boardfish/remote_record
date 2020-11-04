@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module RemoteRecord
-  # Remote record types should inherit from this class and define #get.
+  # Remote record classes should inherit from this class and define #get.
   class Base
     def self.default_config
       Config.new(remote_record_class: self)

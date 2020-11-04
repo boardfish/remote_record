@@ -12,10 +12,10 @@ reach. In this example, we're trying to fetch a GitHub user.
 **Reference** - your record that points at the remote resource using its ID. In
 this example, these are `GitHub::UserReference`s.
 
-**Remote record type** - a class that defines the behavior used to fetch the
+**Remote record class** - a class that defines the behavior used to fetch the
 remote resource. In this example, it's `RemoteRecord::GitHub::User`.
 
-### Creating a remote record type
+### Creating a remote record class
 
 A standard RemoteRecord class looks like this. It should have a `get` method,
 which returns a hash of the data you'd like to query on the user.
@@ -44,7 +44,7 @@ end
 
 ### Creating a remote reference
 
-To start using your remote record type, `include RemoteRecord`. Now, whenever
+To start using your remote record class, `include RemoteRecord`. Now, whenever
 you initialize an instance of your class, it'll be fetched.
 
 Calling `remote_record` in addition to this lets you set some options:
@@ -53,7 +53,7 @@ Calling `remote_record` in addition to this lets you set some options:
 |+-------------+|+------------------------+|+-------------------------------------------------------------------------+|
 | klass         | Inferred from class name | The class to use for fetching attributes                                  |
 | id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID           |
-| authorization | `proc { }`               | The object that your remote record type passes for authorization          |
+| authorization | `proc { }`               | The object that your remote record class passes for authorization          |
 | caching       | false                    | (Not yet implemented) Whether RemoteRecord should cache responses for you |
 
 ```ruby
