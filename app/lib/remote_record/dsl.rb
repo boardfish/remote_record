@@ -20,7 +20,8 @@ module RemoteRecord
       end
 
       def validate_config(options)
-        klass = RemoteRecord::ClassLookup.new(self.class.to_s).remote_record_klass(options.to_h[:remote_record_klass].to_s)
+        klass = RemoteRecord::ClassLookup.new(self.class.to_s)
+                                         .remote_record_klass(options.to_h[:remote_record_klass].to_s)
         raise NotImplementedError.new, 'The remote record does not implement #get.' unless responds_to_get?(klass)
       end
     end
