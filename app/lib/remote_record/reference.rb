@@ -25,10 +25,10 @@ module RemoteRecord
     # rubocop:disable Metrics/BlockLength
     included do
       after_initialize do |reference|
-        remote_record_klass = ClassLookup.new(reference.class).remote_record_klass(
-          reference.class.config.to_h[:remote_record_klass]
+        remote_record_class = ClassLookup.new(reference.class).remote_record_class(
+          reference.class.config.to_h[:remote_record_class]
         )
-        config = remote_record_klass.default_config.merge(reference.class.config.to_h)
+        config = remote_record_class.default_config.merge(reference.class.config.to_h)
         reference.instance_variable_set('@remote_record_options', config)
         reference.fetch_attributes
       end
@@ -56,7 +56,7 @@ module RemoteRecord
       private
 
       def instance
-        @remote_record_options.remote_record_klass.new(self, @remote_record_options)
+        @remote_record_options.remote_record_class.new(self, @remote_record_options)
       end
     end
     # rubocop:enable Metrics/BlockLength

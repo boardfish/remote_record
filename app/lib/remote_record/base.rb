@@ -4,7 +4,7 @@ module RemoteRecord
   # Remote record types should inherit from this class and define #get.
   class Base
     def self.default_config
-      Config.new(remote_record_klass: self)
+      Config.new(remote_record_class: self)
     end
 
     def initialize(reference, options)

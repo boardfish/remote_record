@@ -7,8 +7,8 @@ module RemoteRecord
     extend ActiveSupport::Concern
     class_methods do
       def remote_record(**options)
-        klass = RemoteRecord::ClassLookup.new(self).remote_record_klass(options.to_h[:remote_record_klass])
-        config = RemoteRecord::Config.new(remote_record_klass: klass, **options)
+        klass = RemoteRecord::ClassLookup.new(self).remote_record_class(options.to_h[:remote_record_class])
+        config = RemoteRecord::Config.new(remote_record_class: klass, **options)
         validate_config(config)
         define_singleton_method(:config) { RemoteRecord::Config.new(options) }
       end
@@ -21,7 +21,7 @@ module RemoteRecord
 
       def validate_config(options)
         klass = RemoteRecord::ClassLookup.new(self.class.to_s)
-                                         .remote_record_klass(options.to_h[:remote_record_klass].to_s)
+                                         .remote_record_class(options.to_h[:remote_record_class].to_s)
         raise NotImplementedError.new, 'The remote record does not implement #get.' unless responds_to_get?(klass)
       end
     end

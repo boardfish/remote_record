@@ -7,12 +7,12 @@ module RemoteRecord
       @klass = klass
     end
 
-    def remote_record_klass(klass_name_override = nil)
+    def remote_record_class(klass_name_override = nil)
       klass_name = (klass_name_override || infer_remote_record_class_name)
       klass_name.constantize
     rescue NameError
       raise RemoteRecord::RecordClassNotFound, "#{klass_name} couldn't be found." \
-      "#{' Perhaps you need to define remote_record_klass?' unless klass_name_override}"
+      "#{' Perhaps you need to define remote_record_class?' unless klass_name_override}"
     end
 
     private

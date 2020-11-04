@@ -18,7 +18,7 @@ RSpec.describe RemoteRecord do
     let(:initialize_reference) do
       stub_const(reference_const, Class.new(ApplicationRecord) do
         include RemoteRecord
-        remote_record remote_record_klass: 'RemoteRecord::Dummy::Record'
+        remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
       end)
     end
 
@@ -52,7 +52,7 @@ RSpec.describe RemoteRecord do
         stub_const(reference_const, Class.new(ApplicationRecord) do
           include RemoteRecord
           # It'll try and load RemoteRecord::<#Class >, which ought not to exist
-          remote_record remote_record_klass: 'Foobar::Baz::Bam'
+          remote_record remote_record_class: 'Foobar::Baz::Bam'
         end)
       end
 

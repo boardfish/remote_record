@@ -16,8 +16,8 @@ module RemoteRecord
       }.merge(options)
     end
 
-    def remote_record_klass
-      @options.fetch(:remote_record_klass)
+    def remote_record_class
+      @options.fetch(:remote_record_class)
     end
 
     def authorization
