@@ -9,12 +9,15 @@ module RemoteRecord
       def remote_record(**options)
         klass = RemoteRecord::ClassLookup.new(self).remote_record_class(options.to_h[:remote_record_class])
         config = RemoteRecord::Config.new(remote_record_class: klass, **options)
-        validate_config(config)
+        DSLPrivate.validate_config(config)
         define_singleton_method(:config) { RemoteRecord::Config.new(options) }
       end
+    end
+  end
 
-      private
-
+  # Methods private to the DSL module.
+  module DSLPrivate
+    class << self
       def responds_to_get?(klass)
         klass.instance_methods(false).include? :get
       end
