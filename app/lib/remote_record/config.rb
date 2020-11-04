@@ -11,7 +11,7 @@ module RemoteRecord
     def initialize(**options)
       @options = {
         authorization: proc {},
-        caching: false,
+        caching: true,
         id_field: :remote_resource_id
       }.merge(options)
     end
