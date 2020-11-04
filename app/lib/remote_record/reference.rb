@@ -26,9 +26,9 @@ module RemoteRecord
     included do
       after_initialize do |reference|
         remote_record_class = ClassLookup.new(reference.class).remote_record_class(
-          reference.class.config.to_h[:remote_record_class]
+          reference.class.remote_record_config.to_h[:remote_record_class]
         )
-        config = remote_record_class.default_config.merge(reference.class.config)
+        config = remote_record_class.default_config.merge(reference.class.remote_record_config)
         reference.instance_variable_set('@remote_record_options', config)
         reference.fetch_attributes
       end
