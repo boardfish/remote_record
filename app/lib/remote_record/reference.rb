@@ -22,6 +22,7 @@ module RemoteRecord
   module Reference
     extend ActiveSupport::Concern
 
+    # rubocop:disable Metrics/BlockLength
     included do
       after_initialize do |reference|
         remote_record_klass = ClassLookup.new(reference.class).remote_record_klass(
@@ -49,10 +50,15 @@ module RemoteRecord
       end
 
       def fetch_attributes
-        @attrs = HashWithIndifferentAccess.new(
-          @remote_record_options.remote_record_klass.new(self, @remote_record_options).get
-        )
+        @attrs = HashWithIndifferentAccess.new(instance.get)
+      end
+
+      private
+
+      def instance
+        @remote_record_options.remote_record_klass.new(self, @remote_record_options)
       end
     end
+    # rubocop:enable Metrics/BlockLength
   end
 end
