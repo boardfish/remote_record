@@ -22,15 +22,12 @@ module RemoteRecord
   module Reference
     extend ActiveSupport::Concern
 
-    # rubocop:disable Metrics/BlockLength
     included do
       after_initialize do |reference|
         remote_record_klass = ClassLookup.new(reference.class).remote_record_klass(
           reference.class.config.to_h[:remote_record_klass]
         )
-        config = remote_record_klass.default_config
-                                    .merge(remote_record_klass: remote_record_klass)
-                                    .merge(reference.class.config.to_h)
+        config = remote_record_klass.default_config.merge(reference.class.config.to_h)
         reference.instance_variable_set('@remote_record_options', config)
         reference.fetch_attributes
       end
@@ -57,6 +54,5 @@ module RemoteRecord
         )
       end
     end
-    # rubocop:enable Metrics/BlockLength
   end
 end
