@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module RemoteRecord
-  # A DSL that's helpful for configuring remote references. See the project
-  # README for more on how to use this.
+  # A DSL that's helpful for configuring remote references. To configure a
+  # remote reference, `include RemoteRecord`, then call `remote_record` to
+  # configure the module.
+  # See RemoteRecord::Config#initialize for the default configuration.
   module DSL
     extend ActiveSupport::Concern
     class_methods do

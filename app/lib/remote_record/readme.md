@@ -49,12 +49,12 @@ you initialize an instance of your class, it'll be fetched.
 
 Calling `remote_record` in addition to this lets you set some options:
 
-| Key           | Default                  | Purpose                                                                   |
-|+-------------+|+------------------------+|+-------------------------------------------------------------------------+|
-| klass         | Inferred from class name | The class to use for fetching attributes                                  |
-| id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID           |
-| authorization | `proc { }`               | The object that your remote record class passes for authorization          |
-| caching       | false                    | (Not yet implemented) Whether RemoteRecord should cache responses for you |
+| Key           | Default                  | Purpose                                                                |
+|--------------:|--------------------------|------------------------------------------------------------------------|
+| klass         | Inferred from class name | The class to use for fetching attributes                               |
+| id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID        |
+| authorization | `proc { }`               | The object that your remote record class passes for authorization      |
+| caching       | false                    | Whether RemoteRecord should make a new request whenever it is accessed |
 
 ```ruby
 module GitHub
