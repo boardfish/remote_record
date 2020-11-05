@@ -18,7 +18,6 @@ module RemoteRecord
     private
 
     def infer_remote_record_class_name
-      # byebug
       "RemoteRecord::#{@klass.to_s.delete_suffix('Reference')}"
     end
   end
