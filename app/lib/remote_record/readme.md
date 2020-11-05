@@ -62,9 +62,10 @@ module GitHub
   class UserReference < ApplicationRecord
     belongs_to :user
     include RemoteRecord
-    remote_record \
-      authorization: proc { |reference| reference.user.github_auth_tokens.active.first.token },
-      id_field: :remote_resource_id,
+    remote_record do |c|
+      c.authorization { |reference| reference.user.github_auth_tokens.active.first.token }
+      c.id_field :remote_resource_id
+    end
     # klass: RemoteRecord::GitHub::User, # Inferred from module and class name
     # caching: false
   end
