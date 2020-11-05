@@ -1,24 +1,11 @@
 # frozen_string_literal: true
 
 module RemoteRecord
-  # Core structure of a RemoteRecord. In order to use this, include
-  # RemoteRecord::Core in a class, then define the :get method on instances of
-  # that class. It's also recommended to specify a method on the class that
-  # defines a client, then use this client in your get method.
-  # Example:
-  # class User
-  #   include RemoteRecord::Core
-
-  #   private
-
-  #   def client
-  #     Octokit::Client.new(access_token: authorization)
-  #   end
-
-  #   def get
-  #     client.user(id)
-  #   end
-  # end
+  # Core structure of a reference. A reference populates itself with all the
+  # data for a remote record using behavior defined by its associated remote
+  # record class (a descendant of RemoteRecord::Base). This is done on
+  # initialize by calling #get on an instance of the remote record class. These
+  # attributes are then accessible on the reference thanks to #method_missing.
   module Reference
     extend ActiveSupport::Concern
 
