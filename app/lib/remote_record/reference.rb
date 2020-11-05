@@ -33,11 +33,11 @@ module RemoteRecord
       after_initialize do |reference|
         config = reference.class.remote_record_class.default_config.merge(reference.class.remote_record_config)
         reference.instance_variable_set('@remote_record_options', config)
-        reference.fetch_attributes
+        reference.fetch_remote_resource
       end
 
       def method_missing(method_name, *_args, &_block)
-        fetch_attributes unless @remote_record_options.caching
+        fetch_remote_resource unless @remote_record_options.caching
         return super unless @attrs.key?(method_name)
 
         @attrs.fetch(method_name)
@@ -52,7 +52,7 @@ module RemoteRecord
         super
       end
 
-      def fetch_attributes
+      def fetch_remote_resource
         @attrs = HashWithIndifferentAccess.new(instance.get)
       end
 
