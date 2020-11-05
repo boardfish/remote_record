@@ -19,31 +19,18 @@ module RemoteRecord
       )
     end
 
-    def remote_record_class(new_value = nil, &block)
-      return @options.fetch(__method__) unless block_given? || new_value
-
-      @options[__method__] = block || new_value
-      self
+    %i[remote_record_class authorization caching id_field].each do |option|
+      define_method(option) do |new_value = nil, &block|
+        block_attr_accessor(option, new_value, &block)
+      end
     end
 
-    def authorization(new_value = nil, &block)
-      return @options.fetch(__method__) unless block_given? || new_value
+    # Returns the attribute value if called without args or a block. Otherwise,
+    # sets the attribute to the block or value passed.
+    def block_attr_accessor(attribute, new_value = nil, &block)
+      return @options.fetch(attribute) unless block_given? || new_value
 
-      @options[__method__] = block || new_value
-      self
-    end
-
-    def caching(new_value = nil, &block)
-      return @options.fetch(__method__) unless block_given? || new_value
-
-      @options[__method__] = block || new_value
-      self
-    end
-
-    def id_field(new_value = nil, &block)
-      return @options.fetch(__method__) unless block_given? || new_value
-
-      @options[__method__] = block || new_value
+      @options[attribute] = block || new_value
       self
     end
 
