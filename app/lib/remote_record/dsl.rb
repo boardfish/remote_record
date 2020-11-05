@@ -4,15 +4,16 @@ module RemoteRecord
   # A DSL that's helpful for configuring remote references. To configure a
   # remote reference, `include RemoteRecord`, then call `remote_record` to
   # configure the module.
-  # See RemoteRecord::Config#initialize for the default configuration.
+  # See RemoteRecord::Config#defaults for the default configuration.
   module DSL
     extend ActiveSupport::Concern
     class_methods do
-      def remote_record(**options)
-        klass = RemoteRecord::ClassLookup.new(self).remote_record_class(options.to_h[:remote_record_class])
-        config = RemoteRecord::Config.new(remote_record_class: klass, **options)
+      def remote_record(remote_record_class: nil)
+        klass = RemoteRecord::ClassLookup.new(self).remote_record_class(remote_record_class)
+        config = RemoteRecord::Config.new(remote_record_class: klass)
+        config = yield(config) if block_given?
         DSLPrivate.validate_config(config)
-        define_singleton_method(:remote_record_config) { options }
+        define_singleton_method(:remote_record_config) { config }
       end
     end
   end

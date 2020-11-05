@@ -8,27 +8,43 @@ module RemoteRecord
   # `remote_record` is called.
   class Config
     def initialize(**options)
-      @options = {
+      @options = options
+    end
+
+    def self.defaults
+      new(
         authorization: proc {},
         caching: true,
         id_field: :remote_resource_id
-      }.merge(options)
+      )
     end
 
-    def remote_record_class
-      @options.fetch(:remote_record_class)
+    def remote_record_class(new_value = nil, &block)
+      return @options.fetch(__method__) unless block_given? || new_value
+
+      @options[__method__] = block || new_value
+      self
     end
 
-    def authorization
-      @options.fetch(:authorization)
+    def authorization(new_value = nil, &block)
+      return @options.fetch(__method__) unless block_given? || new_value
+
+      @options[__method__] = block || new_value
+      self
     end
 
-    def caching
-      @options.fetch(:caching)
+    def caching(new_value = nil, &block)
+      return @options.fetch(__method__) unless block_given? || new_value
+
+      @options[__method__] = block || new_value
+      self
     end
 
-    def id_field
-      @options.fetch(:id_field)
+    def id_field(new_value = nil, &block)
+      return @options.fetch(__method__) unless block_given? || new_value
+
+      @options[__method__] = block || new_value
+      self
     end
 
     def to_h

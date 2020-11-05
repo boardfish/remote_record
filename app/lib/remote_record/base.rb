@@ -4,7 +4,7 @@ module RemoteRecord
   # Remote record classes should inherit from this class and define #get.
   class Base
     def self.default_config
-      Config.new(remote_record_class: self)
+      Config.defaults.merge(remote_record_class: self)
     end
 
     def initialize(reference, options)
