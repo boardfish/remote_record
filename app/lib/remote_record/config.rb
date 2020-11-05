@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# Configuration specific to a single remote record, hence the duplicate name. If
-# this were global config for the whole module, it'd be at RemoteRecord::Config.
+# Configuration specific to a single remote record class.
 module RemoteRecord
   # Configuration propagated between remote records and their references. When a
   # new remote reference is initialized, its config is constructed using the
