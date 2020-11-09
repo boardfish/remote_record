@@ -10,7 +10,8 @@ RSpec.describe RemoteRecord do
     let(:initialize_record) do
       stub_const(record_const, Class.new(RemoteRecord::Base) do
         def get
-          puts remote_resource_id
+          # Returns the remote record as a hash
+          { id: remote_resource_id }
         end
       end)
     end
@@ -37,8 +38,7 @@ RSpec.describe RemoteRecord do
       let(:initialize_reference) do
         stub_const(reference_const, Class.new(ApplicationRecord) do
           include RemoteRecord
-          # It'll try and load RemoteRecord::<#Class >, which ought not to exist
-          remote_record
+          remote_record # Inferred to be `RemoteRecord::Class`
         end)
       end
 
@@ -51,7 +51,6 @@ RSpec.describe RemoteRecord do
       let(:initialize_reference) do
         stub_const(reference_const, Class.new(ApplicationRecord) do
           include RemoteRecord
-          # It'll try and load RemoteRecord::<#Class >, which ought not to exist
           remote_record remote_record_class: 'Foobar::Baz::Bam'
         end)
       end
