@@ -7,6 +7,8 @@ module RemoteRecord
   # defaults of the remote record class and the overrides set when
   # `remote_record` is called.
   class Config
+    OPTIONS = %i[remote_record_class authorization memoize id_field].freeze
+
     def initialize(**options)
       @options = options
     end
@@ -14,12 +16,12 @@ module RemoteRecord
     def self.defaults
       new(
         authorization: proc {},
-        caching: true,
+        memoize: true,
         id_field: :remote_resource_id
       )
     end
 
-    %i[remote_record_class authorization caching id_field].each do |option|
+    OPTIONS.each do |option|
       define_method(option) do |new_value = nil, &block|
         block_attr_accessor(option, new_value, &block)
       end

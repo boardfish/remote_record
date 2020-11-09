@@ -54,7 +54,7 @@ Calling `remote_record` in addition to this lets you set some options:
 | klass         | Inferred from class name | The class to use for fetching attributes                               |
 | id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID        |
 | authorization | `proc { }`               | The object that your remote record class passes for authorization      |
-| caching       | false                    | Whether RemoteRecord should make a new request whenever it is accessed |
+| memoize       | false                    | Whether RemoteRecord should make a new request whenever it is accessed |
 
 ```ruby
 module GitHub
@@ -64,10 +64,11 @@ module GitHub
     include RemoteRecord
     remote_record do |c|
       c.authorization { |reference| reference.user.github_auth_tokens.active.first.token }
-      c.id_field :remote_resource_id
+      # Defaults:
+      # c.id_field :remote_resource_id
+      # c.klass RemoteRecord::GitHub::User, # Inferred from module and class name
+      # c.memoize false
     end
-    # klass: RemoteRecord::GitHub::User, # Inferred from module and class name
-    # caching: false
   end
 end
 ```

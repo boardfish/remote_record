@@ -25,7 +25,7 @@ module RemoteRecord
       end
 
       def method_missing(method_name, *_args, &_block)
-        fetch_remote_resource unless @remote_record_options.caching
+        fetch_remote_resource unless @remote_record_options.memoize
         return super unless @attrs.key?(method_name)
 
         @attrs.fetch(method_name)
