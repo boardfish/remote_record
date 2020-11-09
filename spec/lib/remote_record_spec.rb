@@ -42,7 +42,7 @@ RSpec.describe RemoteRecord do
         end)
       end
 
-      it 'raises an error' do
+      it 'raises a RecordClassNotFound error' do
         expect { initialization }.to raise_error RemoteRecord::RecordClassNotFound
       end
     end
@@ -56,7 +56,7 @@ RSpec.describe RemoteRecord do
         end)
       end
 
-      it 'raises an error' do
+      it 'raises a RecordClassNotFound error' do
         expect { initialization }.to raise_error RemoteRecord::RecordClassNotFound
       end
     end
@@ -67,7 +67,7 @@ RSpec.describe RemoteRecord do
         end)
       end
 
-      it 'raises an error' do
+      it 'raises a NotImplemented error' do
         expect { initialization }.to raise_error NotImplementedError
       end
     end
