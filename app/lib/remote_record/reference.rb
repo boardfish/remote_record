@@ -16,6 +16,7 @@ module RemoteRecord
         )
       end
     end
+
     included do
       after_initialize do |reference|
         config = reference.class.remote_record_class.default_config.merge(reference.class.remote_record_config.to_h)
