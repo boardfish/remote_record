@@ -30,9 +30,9 @@ module RemoteRecord
     # Returns the attribute value if called without args or a block. Otherwise,
     # sets the attribute to the block or value passed.
     def block_attr_accessor(attribute, new_value = nil, &block)
-      return @options.fetch(attribute) unless block_given? || new_value
+      return @options.fetch(attribute) unless block_given? || !new_value.nil?
 
-      @options[attribute] = block || new_value
+      @options[attribute] = block_given? ? block : new_value
       self
     end
 

@@ -3,31 +3,41 @@
 require 'rails_helper'
 
 RSpec.describe RemoteRecord do
-  describe '#remote_record' do
-    let(:record_const) { 'RemoteRecord::Dummy::Record' }
-    let(:reference_const) { 'Dummy::RecordReference' }
+  let(:record_const) { 'RemoteRecord::Dummy::Record' }
+  let(:reference_const) { 'Dummy::RecordReference' }
 
-    let(:initialize_record) do
-      stub_const(record_const, Class.new(RemoteRecord::Base) do
-        def get
-          # Returns the remote record as a hash
-          { id: remote_resource_id }
+  let(:initialize_record) do
+    stub_const(record_const, Class.new(RemoteRecord::Base) do
+      def get
+        # Returns the remote record as a hash
+        client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
+      end
+
+      private
+
+      def client
+        Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
+          conn.request :json
+          conn.response :json
+          conn.use Faraday::Response::RaiseError
         end
-      end)
-    end
+      end
+    end)
+  end
 
-    let(:initialize_reference) do
-      stub_const(reference_const, Class.new(ApplicationRecord) do
-        include RemoteRecord
-        remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
-      end)
-    end
+  let(:initialize_reference) do
+    stub_const(reference_const, Class.new(ApplicationRecord) do
+      include RemoteRecord
+      remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
+    end)
+  end
 
-    let(:initialization) do
-      initialize_record
-      initialize_reference
-    end
+  let(:initialization) do
+    initialize_record
+    initialize_reference
+  end
 
+  describe '#remote_record' do
     context 'when all requirements are present' do
       it 'does not raise an error' do
         expect { initialization }.not_to raise_error
@@ -68,6 +78,74 @@ RSpec.describe RemoteRecord do
 
       it 'raises a NotImplemented error' do
         expect { initialization }.to raise_error NotImplementedError
+      end
+    end
+  end
+
+  describe '#fetch_remote_resource' do
+    subject(:remote_reference) { reference_const.constantize.new(remote_resource_id: 1) }
+
+    before do
+      initialization
+      # allow(remote_reference).to receive(:remote_resource_id).and_return(1)
+    end
+
+    around { |example| VCR.use_cassette('json_placeholder', &example) }
+
+    context 'when memoize is true' do
+      let(:initialize_reference) do
+        stub_const(reference_const, Class.new(ApplicationRecord) do
+          attr_accessor :remote_resource_id
+          # Don't attempt a database connection to load the schema
+          def self.load_schema!
+            @columns_hash = {}
+          end
+
+          include RemoteRecord
+          remote_record remote_record_class: 'RemoteRecord::Dummy::Record' do |c|
+            c.memoize true
+          end
+        end)
+      end
+
+      it 'is only requested once' do
+        remote_reference.title
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
+      end
+
+      it 'returns the attribute value' do
+        expect(remote_reference.title).to eq('delectus aut autem')
+      end
+    end
+
+    context 'when memoize is false' do
+      let(:initialize_reference) do
+        stub_const(reference_const, Class.new(ApplicationRecord) do
+          attr_accessor :remote_resource_id
+          # Don't attempt a database connection to load the schema
+          def self.load_schema!
+            @columns_hash = {}
+          end
+
+          include RemoteRecord
+          remote_record remote_record_class: 'RemoteRecord::Dummy::Record' do |c|
+            c.memoize false
+          end
+        end)
+      end
+
+      it 'is requested on initialize' do
+        remote_reference
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
+      end
+
+      it 'is requested again on attribute access' do
+        remote_reference.title
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.twice
+      end
+
+      it 'returns the attribute value' do
+        expect(remote_reference.title).to eq('delectus aut autem')
       end
     end
   end
