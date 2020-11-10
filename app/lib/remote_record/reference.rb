@@ -25,6 +25,7 @@ module RemoteRecord
       end
     end
 
+    # rubocop:disable Metrics/BlockLength
     included do
       after_initialize do |reference|
         config = reference.class.remote_record_class.default_config.merge(
@@ -60,5 +61,6 @@ module RemoteRecord
         @remote_record_options.remote_record_class.new(self, @remote_record_options)
       end
     end
+    # rubocop:enable Metrics/BlockLength
   end
 end
