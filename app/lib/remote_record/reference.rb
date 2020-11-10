@@ -12,14 +12,24 @@ module RemoteRecord
     class_methods do
       def remote_record_class
         ClassLookup.new(self).remote_record_class(
-          remote_record_config.to_h[:remote_record_class].to_s
+          remote_record_config.to_h[:remote_record_class]&.to_s
         )
+      end
+
+      # Default to an empty config, which falls back to the remote record
+      # class's default config and leaves the remote record class to be inferred
+      # from the reference class name
+      # This method is overridden using RemoteRecord::DSL#remote_record.
+      def remote_record_config
+        Config.new
       end
     end
 
     included do
       after_initialize do |reference|
-        config = reference.class.remote_record_class.default_config.merge(reference.class.remote_record_config.to_h)
+        config = reference.class.remote_record_class.default_config.merge(
+          reference.class.remote_record_config.to_h
+        )
         reference.instance_variable_set('@remote_record_options', config)
         reference.fetch_remote_resource
       end

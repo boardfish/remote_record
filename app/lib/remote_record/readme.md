@@ -54,7 +54,7 @@ Calling `remote_record` in addition to this lets you set some options:
 | klass         | Inferred from class name | The class to use for fetching attributes                               |
 | id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID        |
 | authorization | `proc { }`               | The object that your remote record class passes for authorization      |
-| memoize       | false                    | Whether RemoteRecord should make a new request whenever it is accessed |
+| memoize       | true                     | Whether reference instances should memoize the response that populates them |
 
 ```ruby
 module GitHub
@@ -67,9 +67,25 @@ module GitHub
       # Defaults:
       # c.id_field :remote_resource_id
       # c.klass RemoteRecord::GitHub::User, # Inferred from module and class name
-      # c.memoize false
+      # c.memoize true
     end
   end
+end
+```
+
+If your API doesn't require authentication at all, you don't even need to
+configure it. So at its best, RemoteRecord can be as lightweight as:
+
+```ruby
+class JsonPlaceholderAPIReference < ApplicationRecord
+  include RemoteRecord
+  # Falls back to the defaults, so it's equivalent to then calling:
+  # remote_record do |c|
+    # c.authorization { |reference| }
+    # c.id_field :remote_resource_id
+    # c.klass RemoteRecord::GitHub::User, # Inferred from module and class name
+    # c.memoize true
+  # end
 end
 ```
 
