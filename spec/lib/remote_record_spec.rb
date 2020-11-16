@@ -3,11 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe RemoteRecord do
-  let(:record_const) { 'RemoteRecord::Dummy::Record' }
-  let(:reference_const) { 'Dummy::RecordReference' }
+  let(:record_const_name) { 'RemoteRecord::Dummy::Record' }
+  let(:reference_const_name) { 'Dummy::RecordReference' }
 
   let(:initialize_record) do
-    stub_const(record_const, Class.new(RemoteRecord::Base) do
+    stub_const(record_const_name, Class.new(RemoteRecord::Base) do
       def get
         # Memoizes the remote record as a hash
         resource client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
@@ -26,7 +26,7 @@ RSpec.describe RemoteRecord do
   end
 
   let(:initialize_reference) do
-    stub_const(reference_const, Class.new(ApplicationRecord) do
+    stub_const(reference_const_name, Class.new(ApplicationRecord) do
       include RemoteRecord
       remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
     end)
@@ -46,7 +46,7 @@ RSpec.describe RemoteRecord do
 
     context 'when the inferred record class is not defined' do
       let(:initialize_reference) do
-        stub_const(reference_const, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ApplicationRecord) do
           include RemoteRecord
           remote_record # Inferred to be `RemoteRecord::Class`
         end)
@@ -59,7 +59,7 @@ RSpec.describe RemoteRecord do
 
     context 'when the record class is set to an uninitialized constant' do
       let(:initialize_reference) do
-        stub_const(reference_const, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ApplicationRecord) do
           include RemoteRecord
           remote_record remote_record_class: 'Foobar::Baz::Bam'
         end)
@@ -72,7 +72,7 @@ RSpec.describe RemoteRecord do
 
     context 'when the remote record does not respond to #get' do
       let(:initialize_record) do
-        stub_const(record_const, Class.new(RemoteRecord::Base) do
+        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
         end)
       end
 
@@ -83,7 +83,7 @@ RSpec.describe RemoteRecord do
   end
 
   describe '#fetch_remote_resource' do
-    subject(:remote_reference) { reference_const.constantize.new(remote_resource_id: 1) }
+    subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
 
     before do
       initialization
@@ -94,7 +94,7 @@ RSpec.describe RemoteRecord do
 
     context 'when memoize is true' do
       let(:initialize_reference) do
-        stub_const(reference_const, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ApplicationRecord) do
           attr_accessor :remote_resource_id
           # Don't attempt a database connection to load the schema
           def self.load_schema!
@@ -120,7 +120,7 @@ RSpec.describe RemoteRecord do
 
     context 'when memoize is false' do
       let(:initialize_reference) do
-        stub_const(reference_const, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ApplicationRecord) do
           attr_accessor :remote_resource_id
           # Don't attempt a database connection to load the schema
           def self.load_schema!
