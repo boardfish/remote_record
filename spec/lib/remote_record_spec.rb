@@ -83,14 +83,13 @@ RSpec.describe RemoteRecord do
   end
 
   describe '#fetch_remote_resource' do
-    subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
-
-    before do
-      initialization
-      # allow(remote_reference).to receive(:remote_resource_id).and_return(1)
-    end
+    # rubocop:disable RSpec/LeadingSubject
+    before { initialization }
 
     around { |example| VCR.use_cassette('json_placeholder', &example) }
+
+    subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
+    # rubocop:enable RSpec/LeadingSubject
 
     context 'when memoize is true' do
       let(:initialize_reference) do
