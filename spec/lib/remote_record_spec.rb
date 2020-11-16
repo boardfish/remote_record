@@ -109,6 +109,8 @@ RSpec.describe RemoteRecord do
       end
 
       it 'is only requested once' do
+        remote_reference
+        remote_reference.completed
         remote_reference.title
         expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
       end
@@ -140,8 +142,10 @@ RSpec.describe RemoteRecord do
       end
 
       it 'is requested again on attribute access' do
+        remote_reference
+        remote_reference.completed
         remote_reference.title
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.twice
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.times(3)
       end
 
       it 'returns the attribute value' do
