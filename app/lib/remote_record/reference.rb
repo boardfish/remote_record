@@ -31,12 +31,12 @@ module RemoteRecord
         config = reference.class.remote_record_class.default_config.merge(
           reference.class.remote_record_config.to_h
         )
-        reference.instance_variable_set('@remote_record_options', config)
+        reference.instance_variable_set('@remote_record_config', config)
         reference.fetch_remote_resource
       end
 
       def method_missing(method_name, *_args, &_block)
-        fetch_remote_resource unless @remote_record_options.memoize
+        fetch_remote_resource unless @remote_record_config.memoize
         return super unless @attrs.key?(method_name)
 
         @attrs.fetch(method_name)
@@ -58,7 +58,7 @@ module RemoteRecord
       private
 
       def instance
-        @remote_record_options.remote_record_class.new(self, @remote_record_options)
+        @remote_record_config.remote_record_class.new(self, @remote_record_config)
       end
     end
     # rubocop:enable Metrics/BlockLength
