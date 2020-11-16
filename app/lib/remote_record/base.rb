@@ -10,6 +10,17 @@ module RemoteRecord
     def initialize(reference, options)
       @reference = reference
       @options = options.presence || default_config
+      @attrs = HashWithIndifferentAccess.new
+    end
+
+    def method_missing(method_name, *_args, &_block)
+      @attrs.fetch(method_name)
+    rescue KeyError
+      super
+    end
+
+    def respond_to_missing?(method_name, _include_private = false)
+      @attrs.key?(method_name)
     end
 
     def get
@@ -17,6 +28,10 @@ module RemoteRecord
     end
 
     private
+
+    def resource(provider_response)
+      @attrs.update(provider_response)
+    end
 
     def authorization
       authz = @options.authorization

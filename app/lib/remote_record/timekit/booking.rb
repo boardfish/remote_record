@@ -5,7 +5,7 @@ module RemoteRecord
     # :nodoc:
     class Booking < RemoteRecord::Base
       def get
-        client.booking(remote_resource_id)
+        resource client.booking(remote_resource_id)
       end
 
       private

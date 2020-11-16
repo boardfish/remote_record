@@ -25,7 +25,6 @@ module RemoteRecord
       end
     end
 
-    # rubocop:disable Metrics/BlockLength
     included do
       after_initialize do |reference|
         config = reference.class.remote_record_class.default_config.merge(
@@ -35,15 +34,16 @@ module RemoteRecord
         reference.fetch_remote_resource
       end
 
+      # rubocop:disable Style/MethodMissingSuper
       def method_missing(method_name, *_args, &_block)
         fetch_remote_resource unless @remote_record_config.memoize
-        return super unless @attrs.key?(method_name)
 
-        @attrs.fetch(method_name)
+        @instance.public_send(method_name)
       end
+      # rubocop:enable Style/MethodMissingSuper
 
       def respond_to_missing?(method_name, _include_private = false)
-        @attrs.key?(method_name)
+        instance.respond_to?(method_name, false)
       end
 
       def initialize(**args)
@@ -52,15 +52,14 @@ module RemoteRecord
       end
 
       def fetch_remote_resource
-        @attrs = HashWithIndifferentAccess.new(instance.get)
+        instance.get
       end
 
       private
 
       def instance
-        @remote_record_config.remote_record_class.new(self, @remote_record_config)
+        @instance ||= @remote_record_config.remote_record_class.new(self, @remote_record_config)
       end
     end
-    # rubocop:enable Metrics/BlockLength
   end
 end

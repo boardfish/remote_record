@@ -9,8 +9,8 @@ RSpec.describe RemoteRecord do
   let(:initialize_record) do
     stub_const(record_const, Class.new(RemoteRecord::Base) do
       def get
-        # Returns the remote record as a hash
-        client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
+        # Memoizes the remote record as a hash
+        resource client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
       end
 
       private
