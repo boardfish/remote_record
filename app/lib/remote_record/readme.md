@@ -63,7 +63,7 @@ module GitHub
     belongs_to :user
     include RemoteRecord
     remote_record do |c|
-      c.authorization { |reference| reference.user.github_auth_tokens.active.first.token }
+      c.authorization { |record| record.user.github_auth_tokens.active.first.token }
       # Defaults:
       # c.id_field :remote_resource_id
       # c.klass RemoteRecord::GitHub::User, # Inferred from module and class name
