@@ -44,16 +44,16 @@ end
 
 ### Creating a remote reference
 
-To start using your remote record class, `include RemoteRecord`. Now, whenever
+To start using your remote record class, `include RemoteRecord` into your reference. Now, whenever
 you initialize an instance of your class, it'll be fetched.
 
 Calling `remote_record` in addition to this lets you set some options:
 
 | Key           | Default                  | Purpose                                                                |
 |--------------:|--------------------------|------------------------------------------------------------------------|
-| klass         | Inferred from class name | The class to use for fetching attributes                               |
+| klass         | Inferred from class name | The Remote record class to use for fetching attributes                               |
 | id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID        |
-| authorization | `proc { }`               | The object that your remote record class passes for authorization      |
+| authorization | `proc { }`               | An object that can be used by the remote record class to authorize a request. This can be a value or a proc that returns the value expected by the client      |
 | memoize       | true                     | Whether reference instances should memoize the response that populates them |
 
 ```ruby
@@ -81,9 +81,9 @@ class JsonPlaceholderAPIReference < ApplicationRecord
   include RemoteRecord
   # Falls back to the defaults, so it's equivalent to then calling:
   # remote_record do |c|
-    # c.authorization { |reference| }
+    # c.authorization proc { }
     # c.id_field :remote_resource_id
-    # c.klass RemoteRecord::GitHub::User, # Inferred from module and class name
+    # c.klass RemoteRecord::JsonPlaceholderAPI, # Inferred from module and class name
     # c.memoize true
   # end
 end

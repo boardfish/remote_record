@@ -44,7 +44,7 @@ RSpec.describe RemoteRecord do
       end
     end
 
-    context 'when the record class cannot be inferred' do
+    context 'when the inferred record class is not defined' do
       let(:initialize_reference) do
         stub_const(reference_const, Class.new(ApplicationRecord) do
           include RemoteRecord
