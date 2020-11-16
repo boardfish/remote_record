@@ -3,15 +3,9 @@
 module RemoteRecord
   module TimeKit
     # :nodoc:
-    class Booking < RemoteRecord::Base
+    class Booking < RemoteRecord::TimeKit::Base
       def get
         resource client.booking(remote_resource_id)
-      end
-
-      private
-
-      def client
-        APIServices::TimeKit.new
       end
     end
   end
