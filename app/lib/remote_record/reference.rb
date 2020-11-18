@@ -34,6 +34,8 @@ module RemoteRecord
         reference.fetch_remote_resource
       end
 
+      # This doesn't call `super` because it delegates to @instance in all
+      # cases.
       # rubocop:disable Style/MethodMissingSuper
       def method_missing(method_name, *_args, &_block)
         fetch_remote_resource unless @remote_record_config.memoize
