@@ -24,7 +24,7 @@ module RemoteRecord
     end
 
     def get
-      raise NotImplementedError
+      raise NotImplementedError.new, '#get should return a hash of data that represents the remote record.'
     end
 
     def fetch
