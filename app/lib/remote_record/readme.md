@@ -49,12 +49,12 @@ you initialize an instance of your class, it'll be fetched.
 
 Calling `remote_record` in addition to this lets you set some options:
 
-| Key           | Default                  | Purpose                                                                |
-|--------------:|--------------------------|------------------------------------------------------------------------|
-| klass         | Inferred from class name | The Remote record class to use for fetching attributes                               |
-| id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID        |
-| authorization | `proc { }`               | An object that can be used by the remote record class to authorize a request. This can be a value or a proc that returns the value expected by the client      |
-| memoize       | true                     | Whether reference instances should memoize the response that populates them |
+| Key           | Default                  | Purpose                                                                                                                                                                            |
+|--------------:|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| klass         | Inferred from class name | The Remote record class to use for fetching attributes                                                                                                                             |
+| id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID                                                                                                                    |
+| authorization | `proc { }`               | An object that can be used by the remote record class to authorize a request. This can be a value, or a proc that returns a value that can be used within the remote record class. |
+| memoize       | true                     | Whether reference instances should memoize the response that populates them                                                                                                        |
 
 ```ruby
 module GitHub
