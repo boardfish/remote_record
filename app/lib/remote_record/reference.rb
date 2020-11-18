@@ -54,7 +54,7 @@ module RemoteRecord
       end
 
       def fetch_remote_resource
-        instance.get
+        instance.fetch
       end
 
       private

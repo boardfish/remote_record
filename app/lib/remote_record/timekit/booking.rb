@@ -5,7 +5,7 @@ module RemoteRecord
     # :nodoc:
     class Booking < RemoteRecord::TimeKit::Base
       def get
-        resource client.booking(remote_resource_id)
+        client.booking(remote_resource_id)
       end
     end
   end

@@ -27,11 +27,11 @@ module RemoteRecord
       raise NotImplementedError
     end
 
-    private
-
-    def resource(provider_response)
-      @attrs.update(provider_response)
+    def fetch
+      @attrs.update(get)
     end
+
+    private
 
     def authorization
       authz = @options.authorization

@@ -5,7 +5,7 @@ module RemoteRecord
     # :nodoc:
     class User < RemoteRecord::GitHub::Base
       def get
-        resource client.user(remote_resource_id)
+        client.user(remote_resource_id)
       end
     end
   end
