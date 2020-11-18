@@ -18,7 +18,7 @@ remote resource. In this example, it's `RemoteRecord::GitHub::User`.
 ### Creating a remote record class
 
 A standard RemoteRecord class looks like this. It should have a `get` method,
-which calls `resource` on a hash of data you'd like to query on the user.
+which returns a hash of data you'd like to query on the user.
 
 `RemoteRecord::Base` exposes private methods for the `remote_resource_id` and
 `authorization` that you configure on the remote reference.
@@ -29,7 +29,7 @@ module RemoteRecord
     # :nodoc:
     class User < RemoteRecord::Base
       def get
-        resource client.user(remote_resource_id)
+        client.user(remote_resource_id)
       end
 
       private
