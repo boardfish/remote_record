@@ -94,6 +94,7 @@ RSpec.describe RemoteRecord do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ApplicationRecord) do
           attr_accessor :remote_resource_id
+
           # Don't attempt a database connection to load the schema
           def self.load_schema!
             @columns_hash = {}
@@ -122,6 +123,7 @@ RSpec.describe RemoteRecord do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ApplicationRecord) do
           attr_accessor :remote_resource_id
+
           # Don't attempt a database connection to load the schema
           def self.load_schema!
             @columns_hash = {}
