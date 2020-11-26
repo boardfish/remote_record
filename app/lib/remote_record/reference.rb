@@ -36,13 +36,11 @@ module RemoteRecord
 
       # This doesn't call `super` because it delegates to @instance in all
       # cases.
-      # rubocop:disable Style/MethodMissingSuper
       def method_missing(method_name, *_args, &_block)
         fetch_remote_resource unless @remote_record_config.memoize
 
         @instance.public_send(method_name)
       end
-      # rubocop:enable Style/MethodMissingSuper
 
       def respond_to_missing?(method_name, _include_private = false)
         instance.respond_to?(method_name, false)

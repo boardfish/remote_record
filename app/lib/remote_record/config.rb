@@ -15,7 +15,7 @@ module RemoteRecord
 
     def self.defaults
       new(
-        authorization: proc {},
+        authorization: '',
         memoize: true,
         id_field: :remote_resource_id
       )

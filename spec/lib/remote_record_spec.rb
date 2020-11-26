@@ -71,8 +71,7 @@ RSpec.describe RemoteRecord do
 
     context 'when the remote record does not respond to #get' do
       let(:initialize_record) do
-        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
-        end)
+        stub_const(record_const_name, Class.new(RemoteRecord::Base))
       end
 
       it 'raises a NotImplemented error' do
