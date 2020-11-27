@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require 'spec_helper'
 
 RSpec.describe RemoteRecord do
   let(:record_const_name) { 'RemoteRecord::Dummy::Record' }
@@ -25,7 +25,7 @@ RSpec.describe RemoteRecord do
   end
 
   let(:initialize_reference) do
-    stub_const(reference_const_name, Class.new(ApplicationRecord) do
+    stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
       include RemoteRecord
       remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
     end)
@@ -45,7 +45,7 @@ RSpec.describe RemoteRecord do
 
     context 'when the inferred record class is not defined' do
       let(:initialize_reference) do
-        stub_const(reference_const_name, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
           include RemoteRecord
           remote_record # Inferred to be `RemoteRecord::Class`
         end)
@@ -58,7 +58,7 @@ RSpec.describe RemoteRecord do
 
     context 'when the record class is set to an uninitialized constant' do
       let(:initialize_reference) do
-        stub_const(reference_const_name, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
           include RemoteRecord
           remote_record remote_record_class: 'Foobar::Baz::Bam'
         end)
@@ -84,14 +84,12 @@ RSpec.describe RemoteRecord do
     # rubocop:disable RSpec/LeadingSubject
     before { initialization }
 
-    around { |example| VCR.use_cassette('json_placeholder', &example) }
-
     subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
     # rubocop:enable RSpec/LeadingSubject
 
     context 'when memoize is true' do
       let(:initialize_reference) do
-        stub_const(reference_const_name, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
           attr_accessor :remote_resource_id
 
           # Don't attempt a database connection to load the schema
@@ -106,21 +104,21 @@ RSpec.describe RemoteRecord do
         end)
       end
 
-      it 'is only requested once' do
+      it 'is only requested once', :vcr do
         remote_reference
         remote_reference.completed
         remote_reference.title
         expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
       end
 
-      it 'returns the attribute value' do
+      it 'returns the attribute value', :vcr do
         expect(remote_reference.title).to eq('delectus aut autem')
       end
     end
 
     context 'when memoize is false' do
       let(:initialize_reference) do
-        stub_const(reference_const_name, Class.new(ApplicationRecord) do
+        stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
           attr_accessor :remote_resource_id
 
           # Don't attempt a database connection to load the schema
@@ -135,19 +133,19 @@ RSpec.describe RemoteRecord do
         end)
       end
 
-      it 'is requested on initialize' do
+      it 'is requested on initialize', :vcr do
         remote_reference
         expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
       end
 
-      it 'is requested again on attribute access' do
+      it 'is requested again on attribute access', :vcr do
         remote_reference
         remote_reference.completed
         remote_reference.title
         expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.times(3)
       end
 
-      it 'returns the attribute value' do
+      it 'returns the attribute value', :vcr do
         expect(remote_reference.title).to eq('delectus aut autem')
       end
     end

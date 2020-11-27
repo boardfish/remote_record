@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support/concern'
+
 # Generic interface for resources stored on external services.
 module RemoteRecord
   extend ActiveSupport::Concern

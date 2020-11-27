@@ -1,0 +1,77 @@
+PATH
+  remote: .
+  specs:
+    remote_record (0.1.0)
+      activerecord
+      activesupport
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (6.1.0.rc1)
+      activesupport (= 6.1.0.rc1)
+    activerecord (6.1.0.rc1)
+      activemodel (= 6.1.0.rc1)
+      activesupport (= 6.1.0.rc1)
+    activesupport (6.1.0.rc1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+      zeitwerk (~> 2.3)
+    addressable (2.7.0)
+      public_suffix (>= 2.0.2, < 5.0)
+    concurrent-ruby (1.1.7)
+    crack (0.4.4)
+    database_cleaner (1.8.5)
+    diff-lcs (1.4.4)
+    faraday (1.0.1)
+      multipart-post (>= 1.2, < 3)
+    faraday_middleware (1.0.0)
+      faraday (~> 1.0)
+    hashdiff (1.0.1)
+    i18n (1.8.5)
+      concurrent-ruby (~> 1.0)
+    minitest (5.14.2)
+    multipart-post (2.1.1)
+    public_suffix (4.0.6)
+    rake (12.3.3)
+    rspec (3.10.0)
+      rspec-core (~> 3.10.0)
+      rspec-expectations (~> 3.10.0)
+      rspec-mocks (~> 3.10.0)
+    rspec-core (3.10.0)
+      rspec-support (~> 3.10.0)
+    rspec-expectations (3.10.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.10.0)
+    rspec-mocks (3.10.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.10.0)
+    rspec-support (3.10.0)
+    sqlite3 (1.4.2)
+    tzinfo (2.0.3)
+      concurrent-ruby (~> 1.0)
+    vcr (6.0.0)
+    webmock (3.10.0)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+      hashdiff (>= 0.4.0, < 2.0.0)
+    zeitwerk (2.4.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  database_cleaner
+  faraday
+  faraday_middleware
+  rake (~> 12.0)
+  remote_record!
+  rspec (~> 3.0)
+  sqlite3
+  vcr
+  webmock
+
+BUNDLED WITH
+   2.1.4
