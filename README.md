@@ -102,7 +102,7 @@ user.github_user_references.first
 ...it'll be populated with the GitHub user's data. You can call methods that
 return attributes on the user, like `#login` or `#html_url`.
 
-By default, this'll make a request every time you ask for a field. For services
-that manage caching by way of expiry or ETags, I recommend using
-`faraday-http-cache` for your clients. Remote Record will eventually gain
-support for caching.
+By default, this'll only make a request on initialize. For services that manage
+caching by way of expiry or ETags, I recommend using `faraday-http-cache` for
+your clients and setting `memoize` to `false`. Remote Record will eventually
+gain support for caching.
