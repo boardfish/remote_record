@@ -1,0 +1,22 @@
+name: Remote Record
+on: push
+
+jobs:
+  verify:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.7.x
+      - name: Install dependencies
+        run: |
+          sudo apt-get -yqq install libpq-dev build-essential libcurl4-openssl-dev
+          gem install bundler
+          bundle install --jobs 4 --retry 3
+      - name: Lint
+        run: rubocop
+      - name: Run tests
+        run: rspec
