@@ -81,12 +81,9 @@ RSpec.describe RemoteRecord do
   end
 
   describe '#fetch_remote_resource' do
-    # rubocop:disable RSpec/LeadingSubject
     before { initialization }
 
     subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
-    # rubocop:enable RSpec/LeadingSubject
-
     context 'when memoize is true' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
