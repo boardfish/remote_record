@@ -26,4 +26,14 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   spec.add_runtime_dependency 'activerecord'
   spec.add_runtime_dependency 'activesupport'
+  spec.add_development_dependency 'database_cleaner'
+  spec.add_development_dependency 'faraday'
+  spec.add_development_dependency 'faraday_middleware'
+  spec.add_development_dependency 'rake', '~> 12.0'
+  spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.add_development_dependency 'rubocop', '~> 1.4'
+  spec.add_development_dependency 'rubocop-packaging', '~> 0.5.1'
+  spec.add_development_dependency 'sqlite3'
+  spec.add_development_dependency 'vcr'
+  spec.add_development_dependency 'webmock'
 end
