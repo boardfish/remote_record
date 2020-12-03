@@ -111,6 +111,13 @@ RSpec.describe RemoteRecord do
       it 'returns the attribute value', :vcr do
         expect(remote_reference.title).to eq('delectus aut autem')
       end
+
+      it 'makes a additional request to fetch a fresh instance', :vcr do
+        remote_reference
+        remote_reference.completed
+        remote_reference.fresh.title
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.twice
+      end
     end
 
     context 'when memoize is false' do

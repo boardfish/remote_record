@@ -55,6 +55,11 @@ module RemoteRecord
         instance.fetch
       end
 
+      def fresh
+        fetch_remote_resource
+        self
+      end
+
       private
 
       def instance
