@@ -109,3 +109,8 @@ By default, this'll only make a request on initialize. For services that manage
 caching by way of expiry or ETags, I recommend using `faraday-http-cache` for
 your clients and setting `memoize` to `false`. Remote Record will eventually
 gain support for caching.
+
+### Forcing a fresh request
+
+You might want to force a fresh request in some instances, even if you're using
+`memoize`. To do this, call `fresh` on a reference, and it'll be repopulated.
