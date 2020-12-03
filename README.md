@@ -55,6 +55,7 @@ Calling `remote_record` in addition to this lets you set some options:
 | id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID                                                                                                                    |
 | authorization | `''`                     | An object that can be used by the remote record class to authorize a request. This can be a value, or a proc that returns a value that can be used within the remote record class. |
 | memoize       | true                     | Whether reference instances should memoize the response that populates them                                                                                                        |
+| transform     | []                       | Whether the response should be put through a transformer (under RemoteRecord::Transformers). Currently, only `[:snake_case]` is available.                                         |
 
 ```ruby
 module GitHub
@@ -68,6 +69,7 @@ module GitHub
       # c.id_field :remote_resource_id
       # c.klass RemoteRecord::GitHub::User, # Inferred from module and class name
       # c.memoize true
+      # c.transform []
     end
   end
 end
@@ -85,6 +87,7 @@ class JsonPlaceholderAPIReference < ApplicationRecord
     # c.id_field :remote_resource_id
     # c.klass RemoteRecord::JsonPlaceholderAPI, # Inferred from module and class name
     # c.memoize true
+    # c.transform []
   # end
 end
 ```

@@ -7,6 +7,7 @@ require 'remote_record/config'
 require 'remote_record/dsl'
 require 'remote_record/reference'
 require 'remote_record/version'
+require 'remote_record/transformers'
 
 # Generic interface for resources stored on external services.
 module RemoteRecord

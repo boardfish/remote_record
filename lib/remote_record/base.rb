@@ -14,7 +14,7 @@ module RemoteRecord
     end
 
     def method_missing(method_name, *_args, &_block)
-      @attrs.fetch(method_name)
+      transform(@attrs).fetch(method_name)
     rescue KeyError
       super
     end
@@ -32,6 +32,19 @@ module RemoteRecord
     end
 
     private
+
+    def transform(data)
+      transformers.reduce(data) do |data, transformer|
+        transformer.new(data).transform
+      end
+    end
+
+    # Robots in disguise.
+    def transformers
+      @options.transform.map do |transformer_name|
+        "RemoteRecord::Transformers::#{transformer_name.to_s.camelize}".constantize
+      end
+    end
 
     def authorization
       authz = @options.authorization
