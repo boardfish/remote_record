@@ -7,7 +7,7 @@ module RemoteRecord
   # defaults of the remote record class and the overrides set when
   # `remote_record` is called.
   class Config
-    OPTIONS = %i[remote_record_class authorization memoize id_field].freeze
+    OPTIONS = %i[remote_record_class authorization memoize id_field transform].freeze
 
     def initialize(**options)
       @options = options
@@ -17,7 +17,8 @@ module RemoteRecord
       new(
         authorization: '',
         memoize: true,
-        id_field: :remote_resource_id
+        id_field: :remote_resource_id,
+        transform: []
       )
     end
 

@@ -146,5 +146,27 @@ RSpec.describe RemoteRecord do
         expect(remote_reference.title).to eq('delectus aut autem')
       end
     end
+
+    context 'when transform is snake_case' do
+      let(:initialize_reference) do
+        stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
+          attr_accessor :remote_resource_id
+
+          # Don't attempt a database connection to load the schema
+          def self.load_schema!
+            @columns_hash = {}
+          end
+
+          include RemoteRecord
+          remote_record remote_record_class: 'RemoteRecord::Dummy::Record' do |c|
+            c.transform [:snake_case]
+          end
+        end)
+      end
+
+      it 'makes snake case attributes available', :vcr do
+        expect(remote_reference.user_id).to eq(1)
+      end
+    end
   end
 end
