@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RemoteRecord
   module Transformers
     # Converts keys to snake case.
@@ -19,8 +21,8 @@ module RemoteRecord
         end
       end
 
-      def underscore_key(k)
-        k.to_s.underscore.to_sym
+      def underscore_key(key)
+        key.to_s.underscore.to_sym
       end
     end
   end

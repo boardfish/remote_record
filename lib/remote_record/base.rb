@@ -34,8 +34,8 @@ module RemoteRecord
     private
 
     def transform(data)
-      transformers.reduce(data) do |data, transformer|
-        transformer.new(data).transform
+      transformers.reduce(data) do |transformed_data, transformer|
+        transformer.new(transformed_data).transform
       end
     end
 
