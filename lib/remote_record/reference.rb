@@ -27,6 +27,8 @@ module RemoteRecord
 
     # rubocop:disable Metrics/BlockLength
     included do
+      attr_accessor :fetching
+
       after_initialize do |reference|
         config = reference.class.remote_record_class.default_config.merge(
           reference.class.remote_record_config.to_h
@@ -47,17 +49,17 @@ module RemoteRecord
         instance.respond_to?(method_name, false)
       end
 
-      def initialize(**args)
-        @attrs = HashWithIndifferentAccess.new
+      def initialize(fetching: true, **args)
+        @fetching = fetching
         super
       end
 
       def fetch_remote_resource
-        instance.fetch
+        instance.fetch if @fetching
       end
 
       def fresh
-        fetch_remote_resource
+        instance.fetch
         self
       end
 
