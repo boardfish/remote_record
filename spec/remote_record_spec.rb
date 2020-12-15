@@ -36,6 +36,37 @@ RSpec.describe RemoteRecord do
     initialize_reference
   end
 
+  describe '#skip_fetching' do
+    before do
+      skip 'relies on database'
+      initialization
+    end
+
+    subject(:scoped) { reference_const_name.constantize.skip_fetching }
+    let(:initialize_reference) do
+      stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
+        attr_accessor :remote_resource_id
+
+        # Don't attempt a database connection to load the schema
+        def self.load_schema!
+          @columns_hash = {}
+        end
+
+        include RemoteRecord
+        remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
+      end)
+    end
+
+    it 'does not make any requests' do
+      scoped.first
+      expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
+    end
+
+    it 'does not make any requests' do
+      expect(scoped.first).to be_a Dummy::RecordReference
+    end
+  end
+
   describe '#remote_record' do
     context 'when all requirements are present' do
       it 'does not raise an error' do
@@ -112,7 +143,7 @@ RSpec.describe RemoteRecord do
         expect(remote_reference.title).to eq('delectus aut autem')
       end
 
-      it 'makes a additional request to fetch a fresh instance', :vcr do
+      it 'makes an additional request to fetch a fresh instance', :vcr do
         remote_reference
         remote_reference.completed
         remote_reference.fresh.title
