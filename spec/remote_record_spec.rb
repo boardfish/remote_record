@@ -175,5 +175,39 @@ RSpec.describe RemoteRecord do
         expect(remote_reference.user_id).to eq(1)
       end
     end
+
+    context 'when fetching is disabled' do
+      subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1, fetching: false) }
+      let(:initialize_reference) do
+        stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
+          attr_accessor :remote_resource_id
+
+          # Don't attempt a database connection to load the schema
+          def self.load_schema!
+            @columns_hash = {}
+          end
+
+          include RemoteRecord
+          remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
+        end)
+      end
+
+      it 'does not make any requests' do
+        remote_reference
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
+      end
+
+      it 'still returns a Dummy::RecordReference' do
+        expect(remote_reference).to be_a Dummy::RecordReference
+      end
+
+      it 'still responds to remote_resource_id' do
+        expect(remote_reference.remote_resource_id).to eq(1)
+      end
+
+      it 'raises NoMethodError for attributes' do
+        expect { remote_reference.completed }.to raise_error NoMethodError
+      end
+    end
   end
 end
