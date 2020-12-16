@@ -30,6 +30,7 @@ module RemoteRecord
       attr_accessor :fetching
 
       after_initialize do |reference|
+        reference.fetching = true if reference.fetching.nil?
         config = reference.class.remote_record_class.default_config.merge(
           reference.class.remote_record_config.to_h
         )
@@ -49,13 +50,8 @@ module RemoteRecord
         instance.respond_to?(method_name, false)
       end
 
-      def initialize(fetching: true, **args)
-        @fetching = fetching
-        super
-      end
-
       def fetch_remote_resource
-        instance.fetch if @fetching
+        instance.fetch if fetching
       end
 
       def fresh

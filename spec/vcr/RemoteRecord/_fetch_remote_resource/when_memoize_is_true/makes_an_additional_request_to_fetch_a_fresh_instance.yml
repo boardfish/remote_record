@@ -1,0 +1,161 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://jsonplaceholder.typicode.com/todos/1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v1.1.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 15 Dec 2020 14:25:19 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=dbee0cb1bc4301fc742a762aefa34f8911608042319; expires=Thu, 14-Jan-21
+        14:25:19 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      X-Powered-By:
+      - Express
+      X-Ratelimit-Limit:
+      - '1000'
+      X-Ratelimit-Remaining:
+      - '999'
+      X-Ratelimit-Reset:
+      - '1606526533'
+      Vary:
+      - Origin, Accept-Encoding
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - max-age=43200
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Content-Type-Options:
+      - nosniff
+      Etag:
+      - W/"53-hfEnumeNh6YirfjyjaujcOPPT+s"
+      Via:
+      - 1.1 vegur
+      Cf-Cache-Status:
+      - HIT
+      Age:
+      - '23990'
+      Cf-Request-Id:
+      - '070863a702000042331d832000000001'
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=%2FWqxgqu7i%2Fm5AuY4%2BLj7IZBSLio08PLi7HsnG7%2Bzfu2P54r0ifHiY96KcZ5I7dcRR5zTvEjBz6vYq3OfKCHY1JHarpCiqXnbnDvU9xZIshlsNrJmv14%2BEEHRDj%2Br"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 6020d55198ad4233-LHR
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "userId": 1,
+          "id": 1,
+          "title": "delectus aut autem",
+          "completed": false
+        }
+  recorded_at: Tue, 15 Dec 2020 14:25:19 GMT
+- request:
+    method: get
+    uri: https://jsonplaceholder.typicode.com/todos/1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v1.1.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 15 Dec 2020 14:25:19 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=dd5901d5e3905d7532c929d5cf3e637fc1608042319; expires=Thu, 14-Jan-21
+        14:25:19 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      X-Powered-By:
+      - Express
+      X-Ratelimit-Limit:
+      - '1000'
+      X-Ratelimit-Remaining:
+      - '999'
+      X-Ratelimit-Reset:
+      - '1606526533'
+      Vary:
+      - Origin, Accept-Encoding
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - max-age=43200
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Content-Type-Options:
+      - nosniff
+      Etag:
+      - W/"53-hfEnumeNh6YirfjyjaujcOPPT+s"
+      Via:
+      - 1.1 vegur
+      Cf-Cache-Status:
+      - HIT
+      Age:
+      - '23990'
+      Cf-Request-Id:
+      - '070863a77100002d134a965000000001'
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=n5i15dqL5w8Wmt%2F%2FFb4n5Xwi3671pOIQWxYcQtvHbNu5UdSADeye5IpdT3URCPqnvYupSicIZZ%2BrVMAq5GpsS%2Fno%2BKtC11l7rtvzMhGiz3EVprF0eMgjSWatTlDX"}],"group":"cf-nel","max_age":604800}'
+      Nel:
+      - '{"report_to":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 6020d5524e9d2d13-LHR
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "userId": 1,
+          "id": 1,
+          "title": "delectus aut autem",
+          "completed": false
+        }
+  recorded_at: Tue, 15 Dec 2020 14:25:19 GMT
+recorded_with: VCR 6.0.0

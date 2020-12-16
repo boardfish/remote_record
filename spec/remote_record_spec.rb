@@ -112,7 +112,7 @@ RSpec.describe RemoteRecord do
         expect(remote_reference.title).to eq('delectus aut autem')
       end
 
-      it 'makes a additional request to fetch a fresh instance', :vcr do
+      it 'makes an additional request to fetch a fresh instance', :vcr do
         remote_reference
         remote_reference.completed
         remote_reference.fresh.title
