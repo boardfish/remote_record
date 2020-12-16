@@ -29,8 +29,6 @@ module RemoteRecord
     included do
       attr_accessor :fetching
 
-      scope :skip_fetching, -> { where(fetching: false) }
-
       after_initialize do |reference|
         reference.fetching = true if reference.fetching.nil?
         config = reference.class.remote_record_class.default_config.merge(
