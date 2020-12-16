@@ -1,19 +1,17 @@
-example_id                            | status  | run_time        |
-------------------------------------- | ------- | --------------- |
-./spec/remote_record_spec.rb[1:1:1]   | pending | 0.063 seconds   |
-./spec/remote_record_spec.rb[1:1:2]   | pending | 0.00046 seconds |
-./spec/remote_record_spec.rb[1:2:1:1] | passed  | 0.02975 seconds |
-./spec/remote_record_spec.rb[1:2:2:1] | passed  | 0.00087 seconds |
-./spec/remote_record_spec.rb[1:2:3:1] | passed  | 0.00081 seconds |
-./spec/remote_record_spec.rb[1:2:4:1] | passed  | 0.00069 seconds |
-./spec/remote_record_spec.rb[1:3:1:1] | passed  | 0.02652 seconds |
-./spec/remote_record_spec.rb[1:3:1:2] | passed  | 0.01074 seconds |
-./spec/remote_record_spec.rb[1:3:1:3] | passed  | 0.2207 seconds  |
-./spec/remote_record_spec.rb[1:3:2:1] | passed  | 0.01851 seconds |
-./spec/remote_record_spec.rb[1:3:2:2] | passed  | 0.03073 seconds |
-./spec/remote_record_spec.rb[1:3:2:3] | passed  | 0.02002 seconds |
-./spec/remote_record_spec.rb[1:3:3:1] | passed  | 0.01269 seconds |
-./spec/remote_record_spec.rb[1:3:4:1] | passed  | 0.00145 seconds |
-./spec/remote_record_spec.rb[1:3:4:2] | passed  | 0.00235 seconds |
-./spec/remote_record_spec.rb[1:3:4:3] | passed  | 0.00135 seconds |
-./spec/remote_record_spec.rb[1:3:4:4] | passed  | 0.00113 seconds |
+example_id                            | status | run_time        |
+------------------------------------- | ------ | --------------- |
+./spec/remote_record_spec.rb[1:1:1:1] | passed | 0.14453 seconds |
+./spec/remote_record_spec.rb[1:1:2:1] | passed | 0.00129 seconds |
+./spec/remote_record_spec.rb[1:1:3:1] | passed | 0.00152 seconds |
+./spec/remote_record_spec.rb[1:1:4:1] | passed | 0.00155 seconds |
+./spec/remote_record_spec.rb[1:2:1:1] | passed | 0.04694 seconds |
+./spec/remote_record_spec.rb[1:2:1:2] | passed | 0.01667 seconds |
+./spec/remote_record_spec.rb[1:2:1:3] | passed | 0.0262 seconds  |
+./spec/remote_record_spec.rb[1:2:2:1] | passed | 0.01687 seconds |
+./spec/remote_record_spec.rb[1:2:2:2] | passed | 0.04413 seconds |
+./spec/remote_record_spec.rb[1:2:2:3] | passed | 0.02758 seconds |
+./spec/remote_record_spec.rb[1:2:3:1] | passed | 0.01457 seconds |
+./spec/remote_record_spec.rb[1:2:4:1] | passed | 0.00197 seconds |
+./spec/remote_record_spec.rb[1:2:4:2] | passed | 0.00773 seconds |
+./spec/remote_record_spec.rb[1:2:4:3] | passed | 0.00188 seconds |
+./spec/remote_record_spec.rb[1:2:4:4] | passed | 0.00184 seconds |
