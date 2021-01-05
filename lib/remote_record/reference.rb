@@ -27,6 +27,7 @@ module RemoteRecord
 
     # rubocop:disable Metrics/BlockLength
     included do
+      include ActiveSupport::Rescuable
       attr_accessor :fetching
 
       after_initialize do |reference|
@@ -52,6 +53,8 @@ module RemoteRecord
 
       def fetch_remote_resource
         instance.fetch if fetching
+      rescue Exception => e # rubocop:disable Lint/RescueException
+        rescue_with_handler(e) || raise
       end
 
       def fresh
