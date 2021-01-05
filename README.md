@@ -1,6 +1,18 @@
-# RemoteRecord
+![RemoteRecord: Ready-made remote resource structures.](doc/header.svg)
 
-Ready-made remote resource structures.
+---
+
+![Remote Record](https://github.com/raisedevs/remote_record/workflows/Remote%20Record/badge.svg)
+[![Gem Version](https://badge.fury.io/rb/remote_record.svg)](https://badge.fury.io/rb/remote_record)
+
+Every API speaks a different language. Maybe it's REST, maybe it's SOAP, maybe
+it's GraphQL. Maybe it's got its own Ruby client, or maybe you need to roll your
+own. But what if you could just pretend it existed in your database?
+
+RemoteRecord lets you store remote resources by ID and have them auto-populated
+whenever you want to read from them. Whether you're dealing with a user on
+GitHub, a track on Spotify, a place on Google Maps, or a resource on your
+internal infrastructure, you can use RemoteRecord to wrap fetching it.
 
 ## Setup
 
@@ -114,3 +126,7 @@ gain support for caching.
 
 You might want to force a fresh request in some instances, even if you're using
 `memoize`. To do this, call `fresh` on a reference, and it'll be repopulated.
+
+### Skip fetching
+
+You might not want to make a request on initialize sometimes. In this case, pass `fetching: false` to your query or `new` to make sure the resource isn't fetched.
