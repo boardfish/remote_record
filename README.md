@@ -9,10 +9,12 @@ Every API speaks a different language. Maybe it's REST, maybe it's SOAP, maybe
 it's GraphQL. Maybe it's got its own Ruby client, or maybe you need to roll your
 own. But what if you could just pretend it existed in your database?
 
-RemoteRecord lets you store remote resources by ID and have them auto-populated
-whenever you want to read from them. Whether you're dealing with a user on
-GitHub, a track on Spotify, a place on Google Maps, or a resource on your
-internal infrastructure, you can use RemoteRecord to wrap fetching it.
+RemoteRecord provides a consistent ActiveRecord inspired interface for all of
+your application's APIs. Store remote resources by ID, and RemoteRecord will
+auto-populate instances of your ActiveRecord model with their attributes from
+the API. Whether you're dealing with a user on GitHub, a track on Spotify, a
+place on Google Maps, or a resource on your internal infrastructure, you can use
+RemoteRecord to wrap fetching it.
 
 ## Setup
 
