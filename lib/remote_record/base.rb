@@ -3,6 +3,8 @@
 module RemoteRecord
   # Remote record classes should inherit from this class and define #get.
   class Base
+    include ActiveSupport::Rescuable
+
     def self.default_config
       Config.defaults.merge(remote_record_class: self)
     end

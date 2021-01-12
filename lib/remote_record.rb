@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_support/concern'
+require 'active_support/rescuable'
 require 'remote_record/base'
 require 'remote_record/class_lookup'
 require 'remote_record/config'

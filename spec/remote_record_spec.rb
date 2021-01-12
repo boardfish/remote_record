@@ -78,6 +78,48 @@ RSpec.describe RemoteRecord do
         expect { initialization }.to raise_error NotImplementedError
       end
     end
+
+    context 'when a rescue_from hook is configured on the reference' do
+      let(:initialize_record) do
+        stub_const('SomeError', Class.new(StandardError))
+        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
+          def get
+            raise SomeError
+          end
+
+          private
+
+          def client
+            Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
+              conn.request :json
+              conn.response :json
+              conn.use Faraday::Response::RaiseError
+            end
+          end
+        end)
+      end
+
+      let(:initialize_reference) do
+        stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
+          attr_accessor :remote_resource_id
+
+          # Don't attempt a database connection to load the schema
+          def self.load_schema!
+            @columns_hash = {}
+          end
+
+          include RemoteRecord
+
+          remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
+          rescue_from 'SomeError' do; end # rubocop:disable Style/BlockDelimiters
+        end)
+      end
+
+      it 'handles the error using the given block' do
+        initialization
+        expect { reference_const_name.constantize.new(remote_resource_id: 1) }.not_to raise_error
+      end
+    end
   end
 
   describe '#fetch_remote_resource' do
