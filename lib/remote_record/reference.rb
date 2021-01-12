@@ -43,7 +43,7 @@ module RemoteRecord
       def method_missing(method_name, *_args, &_block)
         fetch_remote_resource unless @remote_record_config.memoize
 
-        @instance.public_send(method_name)
+        instance.public_send(method_name)
       end
 
       def respond_to_missing?(method_name, _include_private = false)
