@@ -23,19 +23,26 @@ module RemoteRecord
       def remote_record_config
         Config.new
       end
+
+      def remote_all
+        remote_record_class.all.map { |remote_resource| new(remote_resource_id: remote_resource['id'], initial_attrs: remote_resource) } # where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource) }
+      end
     end
 
     # rubocop:disable Metrics/BlockLength
     included do
       include ActiveSupport::Rescuable
       attr_accessor :fetching
+      attr_accessor :initial_attrs
 
       after_initialize do |reference|
         reference.fetching = true if reference.fetching.nil?
+        reference.fetching = false if reference.initial_attrs.present?
         config = reference.class.remote_record_class.default_config.merge(
           reference.class.remote_record_config.to_h
         )
         reference.instance_variable_set('@remote_record_config', config)
+        reference.instance_variable_set('@instance', @remote_record_config.remote_record_class.new(self, @remote_record_config, reference.initial_attrs.presence || {}))
         reference.fetch_remote_resource
       end
 
