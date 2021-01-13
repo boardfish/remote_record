@@ -24,8 +24,8 @@ module RemoteRecord
         Config.new
       end
 
-      def remote_all
-        remote_record_class.all.map do |remote_resource|
+      def remote_all(&authz_proc)
+        remote_record_class.all(&authz_proc).map do |remote_resource|
           new(remote_resource_id: remote_resource['id'], initial_attrs: remote_resource)
           # FIXME: where(remote_resource_id:
           # remote_resource['id']).first_or_initialize(initial_attrs:

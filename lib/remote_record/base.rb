@@ -29,7 +29,7 @@ module RemoteRecord
       raise NotImplementedError.new, '#get should return a hash of data that represents the remote record.'
     end
 
-    def all
+    def self.all
       raise NotImplementedError.new, '#all should return an array of hashes of data that represent remote records.'
     end
 

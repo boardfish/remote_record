@@ -271,14 +271,15 @@ RSpec.describe RemoteRecord do
           client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
         end
 
-        def self.all
-          client.get('todos').body
+        def self.all(&block)
+          client(&block).get('todos').body
         end
 
         def self.client
           Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
             conn.request :json
             conn.response :json
+            conn.headers['Authorization'] = yield if block_given?
             conn.use Faraday::Response::RaiseError
           end
         end
@@ -314,6 +315,19 @@ RSpec.describe RemoteRecord do
 
     it 'returns records that respond to attributes', :vcr do
       expect(batch_fetch.all? { |reference| reference.respond_to? :title }).to eq(true)
+    end
+
+    context 'when an authorization proc is supplied' do
+      subject(:batch_fetch) do
+        reference_const_name.constantize.remote_all { 'authz header' }
+      end
+
+      it 'is used in the request', :vcr do
+        batch_fetch
+        expect(
+          a_request(:get, 'https://jsonplaceholder.typicode.com/todos').with(headers: { 'Authorization': 'authz header' })
+        ).to have_been_made.once
+      end
     end
   end
 end
