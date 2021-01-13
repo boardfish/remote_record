@@ -259,7 +259,7 @@ RSpec.describe RemoteRecord do
     end
   end
 
-  describe 'batch fetch' do
+  describe '#remote_all' do
     before { initialization }
     subject(:batch_fetch) do
       reference_const_name.constantize.remote_all
@@ -271,8 +271,8 @@ RSpec.describe RemoteRecord do
           client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
         end
 
-        def self.all(&block)
-          client(&block).get('todos').body
+        def self.all(&authz_proc)
+          client(&authz_proc).get('todos').body
         end
 
         def self.client

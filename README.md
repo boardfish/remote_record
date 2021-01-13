@@ -124,6 +124,58 @@ caching by way of expiry or ETags, I recommend using `faraday-http-cache` for
 your clients and setting `memoize` to `false`. Remote Record will eventually
 gain support for caching.
 
+### `remote_all`
+
+If you're able to fetch multiple records at once from the API, implement the
+`self.all` method on your remote record class. This should return an array of
+hashes that can be used to initialize a set of references.
+
+This can optionally take a block
+for authorization - note that it won't use the auth you've configured and that
+you'll always have to supply that inline. For example:
+
+```ruby
+module RemoteRecord
+  module GitHub
+    # :nodoc:
+    class User < RemoteRecord::Base
+      def get
+        client.user(remote_resource_id)
+      end
+
+      def self.all
+        Octokit::Client.new(access_token: yield).users
+      end
+
+      private
+
+      def client
+        Octokit::Client.new(access_token: authorization)
+      end
+    end
+  end
+end
+```
+
+Now you can call `remote_all` on remote reference classes that use
+`RemoteRecord::GitHub::User`, like this:
+
+```ruby
+GitHub::UserReference.remote_all { GITHUB_PERSONAL_ACCESS_TOKEN }
+```
+
+### `initial_attrs`
+
+Behind the scenes, `remote_all` initializes references with a set of
+`initial_attrs`. You can do the same! If you've already fetched the data for an
+object, just pass it to `new` for your reference class under the
+`initial_attrs:`  keyword parameter, like this:
+
+```ruby
+todo = { id: 1, title: 'Hello world' }
+TodoReference.new(remote_resource_id: todo[:id], initial_attrs: todo)
+```
+
 ### Forcing a fresh request
 
 You might want to force a fresh request in some instances, even if you're using
@@ -131,4 +183,6 @@ You might want to force a fresh request in some instances, even if you're using
 
 ### Skip fetching
 
-You might not want to make a request on initialize sometimes. In this case, pass `fetching: false` to your query or `new` to make sure the resource isn't fetched.
+You might not want to make a request on initialize sometimes. In this case, pass
+`fetching: false` to your query or `new` to make sure the resource isn't
+fetched.
