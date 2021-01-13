@@ -130,7 +130,6 @@ RSpec.describe RemoteRecord do
     context 'when memoize is true' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-
           include RemoteRecord
           remote_record remote_record_class: 'RemoteRecord::Dummy::Record' do |c|
             c.memoize true
@@ -225,7 +224,7 @@ RSpec.describe RemoteRecord do
     end
 
     it 'still responds to remote_resource_id' do
-      expect(remote_reference.remote_resource_id).to eq("1")
+      expect(remote_reference.remote_resource_id).to eq('1')
     end
 
     it 'raises NoMethodError for attributes' do
@@ -292,7 +291,8 @@ RSpec.describe RemoteRecord do
       it 'is used in the request', :vcr do
         batch_fetch
         expect(
-          a_request(:get, 'https://jsonplaceholder.typicode.com/todos').with(headers: { 'Authorization': 'authz header' })
+          a_request(:get,
+                    'https://jsonplaceholder.typicode.com/todos').with(headers: { 'Authorization': 'authz header' })
         ).to have_been_made.once
       end
     end

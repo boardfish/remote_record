@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PrepareDb < ActiveRecord::Migration[5.2]
   def up
     down
@@ -8,8 +10,6 @@ class PrepareDb < ActiveRecord::Migration[5.2]
   end
 
   def down
-    if table_exists?(:record_references)
-      drop_table :record_references
-    end
+    drop_table :record_references if table_exists?(:record_references)
   end
 end
