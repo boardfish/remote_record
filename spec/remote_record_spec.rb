@@ -3,6 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe RemoteRecord do
+  before(:all) do
+    ActiveRecord::Base.establish_connection(
+      adapter: 'sqlite3',
+      database: 'test.db'
+    )
+    PrepareDb.migrate(:up)
+  end
+
   let(:record_const_name) { 'RemoteRecord::Dummy::Record' }
   let(:reference_const_name) { 'Dummy::RecordReference' }
 
@@ -101,13 +109,6 @@ RSpec.describe RemoteRecord do
 
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-          attr_accessor :remote_resource_id
-
-          # Don't attempt a database connection to load the schema
-          def self.load_schema!
-            @columns_hash = {}
-          end
-
           include RemoteRecord
 
           remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
@@ -129,12 +130,6 @@ RSpec.describe RemoteRecord do
     context 'when memoize is true' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-          attr_accessor :remote_resource_id
-
-          # Don't attempt a database connection to load the schema
-          def self.load_schema!
-            @columns_hash = {}
-          end
 
           include RemoteRecord
           remote_record remote_record_class: 'RemoteRecord::Dummy::Record' do |c|
@@ -165,13 +160,6 @@ RSpec.describe RemoteRecord do
     context 'when memoize is false' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-          attr_accessor :remote_resource_id
-
-          # Don't attempt a database connection to load the schema
-          def self.load_schema!
-            @columns_hash = {}
-          end
-
           include RemoteRecord
           remote_record remote_record_class: 'RemoteRecord::Dummy::Record' do |c|
             c.memoize false
@@ -204,13 +192,6 @@ RSpec.describe RemoteRecord do
     context 'when transform is snake_case' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-          attr_accessor :remote_resource_id
-
-          # Don't attempt a database connection to load the schema
-          def self.load_schema!
-            @columns_hash = {}
-          end
-
           include RemoteRecord
           remote_record remote_record_class: 'RemoteRecord::Dummy::Record' do |c|
             c.transform [:snake_case]
@@ -229,13 +210,6 @@ RSpec.describe RemoteRecord do
     subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1, fetching: false) }
     let(:initialize_reference) do
       stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-        attr_accessor :remote_resource_id
-
-        # Don't attempt a database connection to load the schema
-        def self.load_schema!
-          @columns_hash = {}
-        end
-
         include RemoteRecord
         remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
       end)
@@ -251,7 +225,7 @@ RSpec.describe RemoteRecord do
     end
 
     it 'still responds to remote_resource_id' do
-      expect(remote_reference.remote_resource_id).to eq(1)
+      expect(remote_reference.remote_resource_id).to eq("1")
     end
 
     it 'raises NoMethodError for attributes' do
@@ -288,13 +262,6 @@ RSpec.describe RemoteRecord do
 
     let(:initialize_reference) do
       stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-        attr_accessor :remote_resource_id
-
-        # Don't attempt a database connection to load the schema
-        def self.load_schema!
-          @columns_hash = {}
-        end
-
         include RemoteRecord
         remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
       end)
