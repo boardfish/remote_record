@@ -202,7 +202,6 @@ RSpec.describe RemoteRecord do
     before { initialization }
 
     context 'when transform is snake_case' do
-
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
           attr_accessor :remote_resource_id
@@ -275,8 +274,6 @@ RSpec.describe RemoteRecord do
         def self.all
           client.get('todos').body
         end
-
-        private
 
         def self.client
           Faraday.new('https://jsonplaceholder.typicode.com') do |conn|

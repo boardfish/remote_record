@@ -25,7 +25,12 @@ module RemoteRecord
       end
 
       def remote_all
-        remote_record_class.all.map { |remote_resource| new(remote_resource_id: remote_resource['id'], initial_attrs: remote_resource) } # where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource) }
+        remote_record_class.all.map do |remote_resource|
+          new(remote_resource_id: remote_resource['id'], initial_attrs: remote_resource)
+          # FIXME: where(remote_resource_id:
+          # remote_resource['id']).first_or_initialize(initial_attrs:
+          # remote_resource) }
+        end
       end
     end
 
@@ -42,7 +47,10 @@ module RemoteRecord
           reference.class.remote_record_config.to_h
         )
         reference.instance_variable_set('@remote_record_config', config)
-        reference.instance_variable_set('@instance', @remote_record_config.remote_record_class.new(self, @remote_record_config, reference.initial_attrs.presence || {}))
+        reference.instance_variable_set('@instance',
+                                        @remote_record_config.remote_record_class.new(
+                                          self, @remote_record_config, reference.initial_attrs.presence || {}
+                                        ))
         reference.fetch_remote_resource
       end
 

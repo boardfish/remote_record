@@ -9,7 +9,7 @@ module RemoteRecord
       Config.defaults.merge(remote_record_class: self)
     end
 
-    def initialize(reference, options = self.default_config, initial_attrs = {})
+    def initialize(reference, options = default_config, initial_attrs = {})
       @reference = reference
       @options = options
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
