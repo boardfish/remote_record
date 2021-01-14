@@ -208,6 +208,9 @@ possible, e.g.:
 GitHub::UserReference.remote_where(q: 'tom', repos: '>42', followers: '>1000') { GITHUB_PERSONAL_ACCESS_TOKEN }
 ```
 
+It's recommended that you write a `Transformer` to do this. Check out
+`RemoteRecord::Transformers::SnakeCase` for an example.
+
 ### `initial_attrs`
 
 Behind the scenes, `remote_all` initializes references with a set of

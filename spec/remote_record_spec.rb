@@ -315,7 +315,7 @@ RSpec.describe RemoteRecord do
         end
 
         def self.where(params, &authz_proc)
-          client(&authz_proc).get('todos', params.to_h { |k, v| [k.to_s.camelize(:lower).to_sym, v] }).body
+          client(&authz_proc).get('todos', RemoteRecord::Transformers::SnakeCase.new(params, :down).transform).body
         end
 
         def self.client

@@ -15,14 +15,19 @@ module RemoteRecord
         when Array
           value.map { |v| convert_hash_keys(v) }
         when Hash
-          Hash[value.map { |k, v| [underscore_key(k), convert_hash_keys(v)] }]
+          Hash[value.map { |k, v| [transform_key(k), convert_hash_keys(v)] }]
         else
           value
         end
       end
 
-      def underscore_key(key)
-        key.to_s.underscore.to_sym
+      def transform_key(key)
+        case @direction
+        when :up
+          key.to_s.underscore.to_sym
+        when :down
+          key.to_s.camelize(:lower).to_sym
+        end
       end
     end
   end

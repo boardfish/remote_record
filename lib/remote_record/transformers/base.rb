@@ -4,8 +4,9 @@ module RemoteRecord
   module Transformers
     # Base transformer class. Inherit from this and implement `#transform`.
     class Base
-      def initialize(data)
+      def initialize(data, direction = :up)
         @data = data
+        @direction = direction
       end
 
       def transform

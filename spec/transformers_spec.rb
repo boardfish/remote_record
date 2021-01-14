@@ -1,0 +1,26 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe RemoteRecord::Transformers do
+  describe described_class::SnakeCase do
+    let(:transformer) { described_class.new(data, direction) }
+    subject(:expected_attribute) { transformer.transform[expected_attribute_name] }
+
+    context 'when the direction is up' do
+      let(:direction) { :up }
+      let(:expected_attribute_name) { :user_id }
+      let(:data) { { userId: 1 } }
+
+      it { is_expected.to eq(1) }
+    end
+
+    context 'when the direction is down' do
+      let(:direction) { :down }
+      let(:expected_attribute_name) { :userId }
+      let(:data) { { user_id: 1 } }
+
+      it { is_expected.to eq(1) }
+    end
+  end
+end
