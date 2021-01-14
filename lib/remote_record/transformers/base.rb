@@ -5,7 +5,8 @@ module RemoteRecord
     # Base transformer class. Inherit from this and implement `#transform`.
     class Base
       def initialize(data, direction = :up)
-        raise ArgumentError.new('The direction should be one of :up or :down.') unless [:up, :down].include? direction
+        raise ArgumentError, 'The direction should be one of :up or :down.' unless %i[up down].include? direction
+
         @data = data
         @direction = direction
       end
