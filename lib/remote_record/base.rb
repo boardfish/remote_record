@@ -33,6 +33,10 @@ module RemoteRecord
       raise NotImplementedError.new, '#all should return an array of hashes of data that represent remote records.'
     end
 
+    def self.where(_params)
+      raise NotImplementedError.new, '#where should return an array of hashes of data that represent remote records.'
+    end
+
     def fetch
       @attrs.update(get)
     end
