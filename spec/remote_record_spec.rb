@@ -342,7 +342,7 @@ RSpec.describe RemoteRecord do
     end
 
     it 'returns all records', :vcr do
-      expect(batch_fetch.length).to eq(10)
+      expect(batch_fetch.length).to eq(20)
     end
 
     it 'returns all records as references', :vcr do
