@@ -9,10 +9,10 @@ module RemoteRecord
       Config.defaults.merge(remote_record_class: self)
     end
 
-    def initialize(reference, options)
+    def initialize(reference, options = default_config, initial_attrs = {})
       @reference = reference
-      @options = options.presence || default_config
-      @attrs = HashWithIndifferentAccess.new
+      @options = options
+      @attrs = HashWithIndifferentAccess.new(initial_attrs)
     end
 
     def method_missing(method_name, *_args, &_block)
@@ -27,6 +27,10 @@ module RemoteRecord
 
     def get
       raise NotImplementedError.new, '#get should return a hash of data that represents the remote record.'
+    end
+
+    def self.all
+      raise NotImplementedError.new, '#all should return an array of hashes of data that represent remote records.'
     end
 
     def fetch

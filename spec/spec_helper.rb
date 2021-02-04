@@ -8,10 +8,10 @@ require 'remote_record/class_lookup'
 require 'remote_record/config'
 require 'vcr'
 require 'active_record'
-require 'database_cleaner'
 require 'faraday'
 require 'faraday_middleware'
 require 'webmock/rspec'
+require_relative 'support/prepare_db'
 
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/vcr'
@@ -20,17 +20,6 @@ VCR.configure do |config|
 end
 
 RSpec.configure do |config|
-  config.before :suite do
-    ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
-  end
-
-  config.before :each do
-    DatabaseCleaner.start
-  end
-  config.after :each do
-    DatabaseCleaner.clean
-  end
-
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = '.rspec_status'
 
