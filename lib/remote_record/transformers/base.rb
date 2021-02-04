@@ -4,8 +4,11 @@ module RemoteRecord
   module Transformers
     # Base transformer class. Inherit from this and implement `#transform`.
     class Base
-      def initialize(data)
+      def initialize(data, direction = :up)
+        raise ArgumentError, 'The direction should be one of :up or :down.' unless %i[up down].include? direction
+
         @data = data
+        @direction = direction
       end
 
       def transform
