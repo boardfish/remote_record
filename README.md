@@ -124,7 +124,7 @@ caching by way of expiry or ETags, I recommend using `faraday-http-cache` for
 your clients and setting `memoize` to `false`. Remote Record will eventually
 gain support for caching.
 
-### `remote_all`
+### `remote_all` and `remote_where`
 
 If you're able to fetch multiple records at once from the API, implement the
 `self.all` method on your remote record class. This should return an array of
@@ -162,6 +162,50 @@ Now you can call `remote_all` on remote reference classes that use
 
 ```ruby
 GitHub::UserReference.remote_all { GITHUB_PERSONAL_ACCESS_TOKEN }
+```
+
+`remote_where` works in the same way, but with a parameter:
+
+```ruby
+module RemoteRecord
+  module GitHub
+    # :nodoc:
+    class User < RemoteRecord::Base
+      def get
+        client.user(remote_resource_id)
+      end
+
+      def self.all
+        Octokit::Client.new(access_token: yield).users
+      end
+
+      def self.where(query)
+        Octokit::Client.new(access_token: yield).search_users(query)
+      end
+
+      private
+
+      def client
+        Octokit::Client.new(access_token: authorization)
+      end
+    end
+  end
+end
+```
+
+Now you can call `remote_where` on remote reference classes that use
+`RemoteRecord::GitHub::User`, like this:
+
+```ruby
+GitHub::UserReference.remote_where('q=tom+repos:%3E42+followers:%3E1000') { GITHUB_PERSONAL_ACCESS_TOKEN }
+```
+
+It's recommended that you include something in `self.where` to filter incoming
+params. Ideally, you want to expose an interface that's as ActiveRecord-like as
+possible, e.g.:
+
+```ruby
+GitHub::UserReference.remote_where(q: 'tom', repos: '>42', followers: '>1000') { GITHUB_PERSONAL_ACCESS_TOKEN }
 ```
 
 ### `initial_attrs`

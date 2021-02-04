@@ -297,4 +297,75 @@ RSpec.describe RemoteRecord do
       end
     end
   end
+
+  describe '#remote_where' do
+    before { initialization }
+    subject(:batch_fetch) do
+      reference_const_name.constantize.remote_where(user_id: 1)
+    end
+
+    let(:initialize_record) do
+      stub_const(record_const_name, Class.new(RemoteRecord::Base) do
+        def get
+          client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
+        end
+
+        def self.all(&authz_proc)
+          client(&authz_proc).get('todos').body
+        end
+
+        def self.where(params, &authz_proc)
+          client(&authz_proc).get('todos', params.to_h { |k, v| [k.to_s.camelize(:lower).to_sym, v] }).body
+        end
+
+        def self.client
+          Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
+            conn.request :json
+            conn.response :json
+            conn.headers['Authorization'] = yield if block_given?
+            conn.use Faraday::Response::RaiseError
+          end
+        end
+      end)
+    end
+
+    let(:initialize_reference) do
+      stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
+        include RemoteRecord
+        remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
+      end)
+    end
+
+    it 'makes only one request', :vcr do
+      batch_fetch
+      expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos?userId=1')).to have_been_made.once
+    end
+
+    it 'returns all records', :vcr do
+      expect(batch_fetch.length).to eq(20)
+    end
+
+    it 'returns all records as references', :vcr do
+      expect(batch_fetch.all? { |reference| reference.is_a? reference_const_name.constantize }).to eq(true)
+    end
+
+    it 'returns records that respond to attributes', :vcr do
+      expect(batch_fetch.all? { |reference| reference.respond_to? :title }).to eq(true)
+    end
+
+    context 'when an authorization proc is supplied' do
+      subject(:batch_fetch) do
+        reference_const_name.constantize.remote_where(user_id: 1) { 'authz header' }
+      end
+
+      it 'is used in the request', :vcr do
+        batch_fetch
+        expect(
+          a_request(:get,
+                    'https://jsonplaceholder.typicode.com/todos?userId=1')
+                    .with(headers: { 'Authorization': 'authz header' })
+        ).to have_been_made.once
+      end
+    end
+  end
 end
