@@ -10,6 +10,8 @@ module RemoteRecord
     extend ActiveSupport::Concern
 
     class_methods do
+      attr_accessor :fetching
+
       def remote_record_class
         ClassLookup.new(self).remote_record_class(
           remote_record_config.to_h[:remote_record_class]&.to_s
@@ -22,6 +24,19 @@ module RemoteRecord
       # This method is overridden using RemoteRecord::DSL#remote_record.
       def remote_record_config
         Config.new
+      end
+
+      def fetching
+        @fetching = true if @fetching.nil?
+        @fetching
+      end
+
+      # Disable fetching for all records initialized in the block.
+      def no_fetching
+        self.fetching = false
+        block_return_value = yield(self)
+        self.fetching = true
+        block_return_value
       end
 
       def remote_all(&authz_proc)
@@ -40,11 +55,10 @@ module RemoteRecord
     # rubocop:disable Metrics/BlockLength
     included do
       include ActiveSupport::Rescuable
-      attr_accessor :fetching
+      attribute :fetching, :boolean, default: -> { self.fetching }
       attr_accessor :initial_attrs
 
       after_initialize do |reference|
-        reference.fetching = true if reference.fetching.nil?
         reference.fetching = false if reference.initial_attrs.present?
         config = reference.class.remote_record_class.default_config.merge(
           reference.class.remote_record_config.to_h

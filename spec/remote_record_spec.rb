@@ -206,7 +206,6 @@ RSpec.describe RemoteRecord do
 
   describe 'disable fetching' do
     before { initialization }
-    subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1, fetching: false) }
     let(:initialize_reference) do
       stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
         include RemoteRecord
@@ -214,21 +213,51 @@ RSpec.describe RemoteRecord do
       end)
     end
 
-    it 'does not make any requests' do
-      remote_reference
-      expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
+    context 'when using #new' do
+      subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1, fetching: false) }
+
+      it 'does not make any requests' do
+        remote_reference
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
+      end
+
+      it 'still returns a Dummy::RecordReference' do
+        expect(remote_reference).to be_a Dummy::RecordReference
+      end
+
+      it 'still responds to remote_resource_id' do
+        expect(remote_reference.remote_resource_id).to eq('1')
+      end
+
+      it 'raises NoMethodError for attributes' do
+        expect { remote_reference.completed }.to raise_error NoMethodError
+      end
     end
 
-    it 'still returns a Dummy::RecordReference' do
-      expect(remote_reference).to be_a Dummy::RecordReference
-    end
+    context 'when using #find_by' do
+      subject(:remote_reference) {
+        reference_const_name.constantize.create(remote_resource_id: 1)
+        reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1) }
+      }
 
-    it 'still responds to remote_resource_id' do
-      expect(remote_reference.remote_resource_id).to eq('1')
-    end
+      it 'does not make any requests in the no_fetching context', :vcr do
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
+        WebMock.reset_executed_requests!
+        remote_reference
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
+      end
 
-    it 'raises NoMethodError for attributes' do
-      expect { remote_reference.completed }.to raise_error NoMethodError
+      it 'still returns a Dummy::RecordReference', :vcr do
+        expect(remote_reference).to be_a Dummy::RecordReference
+      end
+
+      it 'still responds to remote_resource_id', :vcr do
+        expect(remote_reference.remote_resource_id).to eq('2')
+      end
+
+      it 'raises NoMethodError for attributes', :vcr do
+        expect { remote_reference.completed }.to raise_error NoMethodError
+      end
     end
   end
 
