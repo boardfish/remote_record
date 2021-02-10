@@ -42,7 +42,9 @@ module RemoteRecord
       def remote_all(&authz_proc)
         no_fetching do
           remote_record_class.all(&authz_proc).map do |remote_resource|
-            where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+            where(remote_resource_id: remote_resource['id']).first_or_initialize.tap do |record|
+              record.attrs = remote_resource
+            end
           end
         end
       end
@@ -50,7 +52,9 @@ module RemoteRecord
       def remote_where(params, &authz_proc)
         no_fetching do
           remote_record_class.where(params, &authz_proc).map do |remote_resource|
-            where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+            where(remote_resource_id: remote_resource['id']).first_or_initialize.tap do |record|
+              record.attrs = remote_resource
+            end
           end
         end
       end
@@ -99,6 +103,8 @@ module RemoteRecord
       end
 
       private
+
+      delegate :attrs=, to: :@instance
 
       def instance
         @instance ||= @remote_record_config.remote_record_class.new(self, @remote_record_config)

@@ -41,6 +41,10 @@ module RemoteRecord
       @attrs.update(get)
     end
 
+    def attrs=(new_attrs)
+      @attrs.update(new_attrs)
+    end
+
     private
 
     def transform(data)
