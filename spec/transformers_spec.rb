@@ -32,4 +32,33 @@ RSpec.describe RemoteRecord::Transformers do
       it { is_expected.to eq(1) }
     end
   end
+
+  describe described_class::DotParams do
+    let(:transformer) { described_class.new(data, direction) }
+    subject(:result) { transformer.transform }
+
+    context 'when the direction is not valid' do
+      let(:direction) { :left }
+      let(:data) { { userId: 1 } }
+
+      it 'is expected to raise an error' do
+        expect { transformer }.to raise_error ArgumentError
+      end
+    end
+
+    context 'when the direction is up' do
+      let(:direction) { :up }
+      let(:data) { { customer: { user_id: 1 }, state: :completed } }
+
+      it { is_expected.to eq('customer.user_id:1;state:completed') }
+    end
+
+    xcontext 'when the direction is down' do
+      let(:direction) { :down }
+      let(:expected_attribute_name) { :userId }
+      let(:data) { 'customer.user_id:1;state:completed' }
+
+      it { is_expected.to eq({ customer: { user_id: 1 }, state: :completed }) }
+    end
+  end
 end
