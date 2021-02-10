@@ -9,7 +9,7 @@ module RemoteRecord
   module Reference
     extend ActiveSupport::Concern
 
-    class_methods do
+    class_methods do # rubocop:disable Metrics/BlockLength
       attr_accessor :fetching
 
       def remote_record_class
@@ -63,7 +63,7 @@ module RemoteRecord
     # rubocop:disable Metrics/BlockLength
     included do
       include ActiveSupport::Rescuable
-      attribute :fetching, :boolean, default: -> { self.fetching }
+      attribute :fetching, :boolean, default: -> { fetching }
       attr_accessor :initial_attrs
 
       after_initialize do |reference|

@@ -235,10 +235,10 @@ RSpec.describe RemoteRecord do
     end
 
     context 'when using #find_by' do
-      subject(:remote_reference) {
+      subject(:remote_reference) do
         reference_const_name.constantize.create(remote_resource_id: 1)
         reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1) }
-      }
+      end
 
       it 'does not make any requests in the no_fetching context', :vcr do
         remote_reference
