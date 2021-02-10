@@ -40,14 +40,18 @@ module RemoteRecord
       end
 
       def remote_all(&authz_proc)
-        remote_record_class.all(&authz_proc).map do |remote_resource|
-          where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+        no_fetching do
+          remote_record_class.all(&authz_proc).map do |remote_resource|
+            where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+          end
         end
       end
 
       def remote_where(params, &authz_proc)
-        remote_record_class.where(params, &authz_proc).map do |remote_resource|
-          where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+        no_fetching do
+          remote_record_class.where(params, &authz_proc).map do |remote_resource|
+            where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+          end
         end
       end
     end
