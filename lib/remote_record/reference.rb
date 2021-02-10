@@ -40,22 +40,48 @@ module RemoteRecord
       end
 
       def remote_all(&authz_proc)
+        find_or_initialize_all(remote_record_class.all(&authz_proc))
+      end
+
+      def remote_where(params, &authz_proc)
+        find_or_initialize_all(remote_record_class.where(params, &authz_proc))
+      end
+
+      private
+
+      def find_or_initialize_all(remote_resources)
         no_fetching do
-          remote_record_class.all(&authz_proc).map do |remote_resource|
-            where(remote_resource_id: remote_resource['id']).first_or_initialize.tap do |record|
-              record.attrs = remote_resource
+          pair_remote_resources_with_records(remote_resources) do |unsaved_resources, relation|
+            new_resources = unsaved_resources.map do |resource|
+              new(remote_resource_id: resource['id']).tap { |record| record.attrs = resource }
             end
+            relation.to_a + new_resources
           end
         end
       end
 
-      def remote_where(params, &authz_proc)
-        no_fetching do
-          remote_record_class.where(params, &authz_proc).map do |remote_resource|
-            where(remote_resource_id: remote_resource['id']).first_or_initialize.tap do |record|
-              record.attrs = remote_resource
-            end
+      def pair_remote_resources_with_records(remote_resources)
+        # get resource ids
+        ids = remote_resource_ids(remote_resources)
+        # get what exists in the database
+        relation = where(remote_resource_id: ids)
+        # for each record, set its attrs
+        relation.map do |record|
+          record.attrs = remote_resources.find do |r|
+            r['id'].to_s == record.remote_resource_id.to_s
           end
+        end
+        unsaved_resources = resources_without_persisted_references(remote_resources, relation)
+        yield(unsaved_resources, relation)
+      end
+
+      def remote_resource_ids(remote_resources)
+        remote_resources.map { |remote_resource| remote_resource['id'] }
+      end
+
+      def resources_without_persisted_references(remote_resources, relation)
+        remote_resources.reject do |resource|
+          relation.pluck(:remote_resource_id).include? resource['id']
         end
       end
     end
@@ -101,8 +127,6 @@ module RemoteRecord
         instance.fetch
         self
       end
-
-      private
 
       delegate :attrs=, to: :@instance
 
