@@ -241,10 +241,8 @@ RSpec.describe RemoteRecord do
       }
 
       it 'does not make any requests in the no_fetching context', :vcr do
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
-        WebMock.reset_executed_requests!
         remote_reference
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
       end
 
       it 'still returns a Dummy::RecordReference', :vcr do
@@ -252,7 +250,7 @@ RSpec.describe RemoteRecord do
       end
 
       it 'still responds to remote_resource_id', :vcr do
-        expect(remote_reference.remote_resource_id).to eq('2')
+        expect(remote_reference.remote_resource_id).to eq('1')
       end
 
       it 'raises NoMethodError for attributes', :vcr do
