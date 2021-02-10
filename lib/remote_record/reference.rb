@@ -9,7 +9,9 @@ module RemoteRecord
   module Reference
     extend ActiveSupport::Concern
 
-    class_methods do
+    class_methods do # rubocop:disable Metrics/BlockLength
+      attr_accessor :fetching
+
       def remote_record_class
         ClassLookup.new(self).remote_record_class(
           remote_record_config.to_h[:remote_record_class]&.to_s
@@ -24,15 +26,36 @@ module RemoteRecord
         Config.new
       end
 
+      def fetching
+        @fetching = true if @fetching.nil?
+        @fetching
+      end
+
+      # Disable fetching for all records initialized in the block.
+      def no_fetching
+        self.fetching = false
+        block_return_value = yield(self)
+        self.fetching = true
+        block_return_value
+      end
+
       def remote_all(&authz_proc)
-        remote_record_class.all(&authz_proc).map do |remote_resource|
-          where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+        no_fetching do
+          remote_record_class.all(&authz_proc).map do |remote_resource|
+            where(remote_resource_id: remote_resource['id']).first_or_initialize.tap do |record|
+              record.attrs = remote_resource
+            end
+          end
         end
       end
 
       def remote_where(params, &authz_proc)
-        remote_record_class.where(params, &authz_proc).map do |remote_resource|
-          where(remote_resource_id: remote_resource['id']).first_or_initialize(initial_attrs: remote_resource)
+        no_fetching do
+          remote_record_class.where(params, &authz_proc).map do |remote_resource|
+            where(remote_resource_id: remote_resource['id']).first_or_initialize.tap do |record|
+              record.attrs = remote_resource
+            end
+          end
         end
       end
     end
@@ -40,11 +63,10 @@ module RemoteRecord
     # rubocop:disable Metrics/BlockLength
     included do
       include ActiveSupport::Rescuable
-      attr_accessor :fetching
+      attribute :fetching, :boolean, default: -> { fetching }
       attr_accessor :initial_attrs
 
       after_initialize do |reference|
-        reference.fetching = true if reference.fetching.nil?
         reference.fetching = false if reference.initial_attrs.present?
         config = reference.class.remote_record_class.default_config.merge(
           reference.class.remote_record_config.to_h
@@ -81,6 +103,8 @@ module RemoteRecord
       end
 
       private
+
+      delegate :attrs=, to: :@instance
 
       def instance
         @instance ||= @remote_record_config.remote_record_class.new(self, @remote_record_config)

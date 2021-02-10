@@ -231,5 +231,19 @@ You might want to force a fresh request in some instances, even if you're using
 ### Skip fetching
 
 You might not want to make a request on initialize sometimes. In this case, pass
-`fetching: false` to your query or `new` to make sure the resource isn't
-fetched.
+`fetching: false` when creating or initializing references to make sure the
+resource isn't fetched.
+
+When querying for records using ActiveRecord alone, you might want to do so
+within a `no_fetching` context:
+
+```ruby
+TodoReference.no_fetching { |model| model.where(remote_resource_id: 1) }
+```
+
+Any records initialized within a `no_fetching` context won't be requested. It's
+sort of like a `Faraday` cage, pun entirely intended.
+
+If you're using `remote_all` or `remote_where` to fetch using your API, that'll
+automatically use this behind the scenes, then set `attrs` to the response
+value.
