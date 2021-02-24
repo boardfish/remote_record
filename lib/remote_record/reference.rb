@@ -48,7 +48,10 @@ module RemoteRecord
       end
 
       def remote_find_by(params, &authz_proc)
-        remote_where(params, &authz_proc).first
+        return remote_where(params, &authz_proc).first unless remote_record_class.respond_to?(:find_by)
+
+        resource = remote_record_class.find_by(params, &authz_proc)
+        new(remote_resource_id: resource['id'], initial_attrs: resource)
       end
 
       private
