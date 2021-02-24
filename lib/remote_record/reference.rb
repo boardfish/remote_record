@@ -6,7 +6,7 @@ module RemoteRecord
   # record class (a descendant of RemoteRecord::Base). This is done on
   # initialize by calling #get on an instance of the remote record class. These
   # attributes are then accessible on the reference thanks to #method_missing.
-  module Reference
+  module Reference # rubocop:disable Metrics/ModuleLength
     extend ActiveSupport::Concern
 
     class_methods do # rubocop:disable Metrics/BlockLength
@@ -54,7 +54,21 @@ module RemoteRecord
         new(remote_resource_id: resource['id'], initial_attrs: resource)
       end
 
+      def remote_find_or_initialize_by(params, &authz_proc)
+        return remote_where(params, &authz_proc).first unless remote_record_class.respond_to?(:find_by)
+
+        resource = remote_record_class.find_by(params, &authz_proc)
+        find_or_initialize_one(id: resource['id'], initial_attrs: resource)
+      end
+
       private
+
+      def find_or_initialize_one(id:, initial_attrs:)
+        existing_record = no_fetching { find_by(remote_resource_id: id) }
+        return existing_record.tap { |r| r.attrs = initial_attrs } if existing_record.present?
+
+        new(remote_resource_id: id, initial_attrs: initial_attrs)
+      end
 
       def find_or_initialize_all(remote_resources)
         no_fetching do
