@@ -247,3 +247,23 @@ sort of like a `Faraday` cage, pun entirely intended.
 If you're using `remote_all` or `remote_where` to fetch using your API, that'll
 automatically use this behind the scenes, then set `attrs` to the response
 value.
+
+### Finding a record without having its canonical ID
+
+On many platforms, you might find yourself searching for users by email or
+username. Those aren't canonical IDs - they could change. But searching for them
+by either of those things is a safe bet as a user, nine times out of ten.
+
+Similarly, you (or your users) might not always have a remote resource's ID
+upfront. You might, however, have something unique enough to discern it from
+other records, like a user-facing ID. A good example is a pull request reference
+on GitHub - using the repo name, owner's username, and pull request ID, you can
+find a pull request.
+
+Of course, that shouldn't be your canonical source, because two of those things
+could change. You could change your username, and you could rename the repo. But
+it's useful to be able to search by those things, right?
+
+Implement `find_by` on your remote_record class, and RemoteRecord will use it.
+If you don't, RemoteRecord will fall back to `remote_where`. This takes the same
+params as other class-level RemoteRecord methods, including an auth proc.
