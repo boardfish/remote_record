@@ -441,11 +441,11 @@ RSpec.describe RemoteRecord do
       end
 
       it 'returns a remote reference', :vcr do
-        expect(find_by.is_a? reference_const_name.constantize).to be true
+        expect(find_by.is_a?(reference_const_name.constantize)).to be true
       end
 
       it 'returns a remote reference that responds to attributes', :vcr do
-        expect(find_by.respond_to? :title).to eq(true)
+        expect(find_by.respond_to?(:title)).to eq(true)
       end
 
       context 'when an authorization proc is supplied' do
@@ -479,7 +479,7 @@ RSpec.describe RemoteRecord do
             client(&authz_proc).get('todos', RemoteRecord::Transformers::SnakeCase.new(params, :down).transform).body
           end
 
-          def self.find_by(user_id:, **params, &authz_proc)
+          def self.find_by(user_id:, **_params, &authz_proc)
             client(&authz_proc).get("todos/#{CGI.escape(user_id.to_s)}").body
           end
 
@@ -500,11 +500,11 @@ RSpec.describe RemoteRecord do
       end
 
       it 'returns a remote reference', :vcr do
-        expect(find_by.is_a? reference_const_name.constantize).to be true
+        expect(find_by.is_a?(reference_const_name.constantize)).to be true
       end
 
       it 'returns a remote reference that responds to attributes', :vcr do
-        expect(find_by.respond_to? :title).to eq(true)
+        expect(find_by.respond_to?(:title)).to eq(true)
       end
 
       context 'when an authorization proc is supplied' do
