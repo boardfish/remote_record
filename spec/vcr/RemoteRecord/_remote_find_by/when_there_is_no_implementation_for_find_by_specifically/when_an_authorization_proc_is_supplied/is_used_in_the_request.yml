@@ -1,0 +1,198 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://jsonplaceholder.typicode.com/todos?userId=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Authorization:
+      - authz header
+      User-Agent:
+      - Faraday v1.0.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 24 Feb 2021 12:20:34 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=dcfa4bdc73c80ab8c3bbf9a3005c3febf1614169234; expires=Fri, 26-Mar-21
+        12:20:34 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      X-Powered-By:
+      - Express
+      X-Ratelimit-Limit:
+      - '1000'
+      X-Ratelimit-Remaining:
+      - '999'
+      X-Ratelimit-Reset:
+      - '1613838993'
+      Vary:
+      - Origin, Accept-Encoding
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - no-cache
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Content-Type-Options:
+      - nosniff
+      Etag:
+      - W/"8df-BI33H3JkF5x/twg0KTe/qy2U04I"
+      Via:
+      - 1.1 vegur
+      Cf-Cache-Status:
+      - BYPASS
+      Cf-Request-Id:
+      - '087594f3ff0000bb884910c000000001'
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Report-To:
+      - '{"group":"cf-nel","endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=WphnOEgGi3He7b8Px2Vwym4SomYdxFjbSx3ZuURKpCfqHskBgy1aHmfjN4vM9F76G%2BFdEOe17ZvkHaYl1jHgE8rUkqe9ZLjLAU7XeLaJGVBmRJuwytdqMEEuIiP9"}],"max_age":604800}'
+      Nel:
+      - '{"max_age":604800,"report_to":"cf-nel"}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 626924333bc9bb88-LHR
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        [
+          {
+            "userId": 1,
+            "id": 1,
+            "title": "delectus aut autem",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 2,
+            "title": "quis ut nam facilis et officia qui",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 3,
+            "title": "fugiat veniam minus",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 4,
+            "title": "et porro tempora",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 5,
+            "title": "laboriosam mollitia et enim quasi adipisci quia provident illum",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 6,
+            "title": "qui ullam ratione quibusdam voluptatem quia omnis",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 7,
+            "title": "illo expedita consequatur quia in",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 8,
+            "title": "quo adipisci enim quam ut ab",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 9,
+            "title": "molestiae perspiciatis ipsa",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 10,
+            "title": "illo est ratione doloremque quia maiores aut",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 11,
+            "title": "vero rerum temporibus dolor",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 12,
+            "title": "ipsa repellendus fugit nisi",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 13,
+            "title": "et doloremque nulla",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 14,
+            "title": "repellendus sunt dolores architecto voluptatum",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 15,
+            "title": "ab voluptatum amet voluptas",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 16,
+            "title": "accusamus eos facilis sint et aut voluptatem",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 17,
+            "title": "quo laboriosam deleniti aut qui",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 18,
+            "title": "dolorum est consequatur ea mollitia in culpa",
+            "completed": false
+          },
+          {
+            "userId": 1,
+            "id": 19,
+            "title": "molestiae ipsa aut voluptatibus pariatur dolor nihil",
+            "completed": true
+          },
+          {
+            "userId": 1,
+            "id": 20,
+            "title": "ullam nobis libero sapiente ad optio sint",
+            "completed": true
+          }
+        ]
+  recorded_at: Wed, 24 Feb 2021 12:20:09 GMT
+recorded_with: VCR 6.0.0

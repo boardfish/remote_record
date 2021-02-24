@@ -47,6 +47,10 @@ module RemoteRecord
         find_or_initialize_all(remote_record_class.where(params, &authz_proc))
       end
 
+      def remote_find_by(params, &authz_proc)
+        remote_where(params, &authz_proc).first
+      end
+
       private
 
       def find_or_initialize_all(remote_resources)
