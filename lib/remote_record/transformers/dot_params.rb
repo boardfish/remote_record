@@ -2,7 +2,7 @@
 
 module RemoteRecord
   module Transformers
-    # Converts keys to snake case.
+    # Converts keys to dot params.
     class DotParams < RemoteRecord::Transformers::Base
       def transform
         convert_hash_keys(@data).map { |k, v| "#{CGI.escape(k.to_s)}:#{CGI.escape(v.to_s)}" }.join(';')
