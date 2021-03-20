@@ -5,6 +5,26 @@ module RemoteRecord
   class Base
     include ActiveSupport::Rescuable
 
+    def self.inherited(subclass)
+      subclass.const_set :Type, Class.new(RemoteRecord::Type) do
+        def type
+          :string
+        end
+
+        def cast(remote_resource_id)
+          self.new(remote_resource_id)
+        end
+
+        def deserialize(value)
+          self.new(remote_resource_id)
+        end
+
+        def serialize(remote_resource_representation)
+          remote_resource_representation.id
+        end
+      end
+    end
+
     def self.default_config
       Config.defaults.merge(remote_record_class: self)
     end

@@ -126,6 +126,10 @@ module RemoteRecord
         reference.fetch_remote_resource
       end
 
+      def remote
+        remote_resource_id
+      end
+
       # This doesn't call `super` because it delegates to @instance in all
       # cases.
       def method_missing(method_name, *_args, &_block)

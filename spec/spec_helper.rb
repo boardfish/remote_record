@@ -2,6 +2,7 @@
 
 require 'database_cleaner'
 require 'remote_record'
+require 'remote_record/type'
 require 'remote_record/base'
 require 'remote_record/reference'
 require 'remote_record/dsl'
