@@ -6,33 +6,37 @@ module RemoteRecord
     include ActiveSupport::Rescuable
 
     def self.inherited(subclass)
-      subclass.const_set :Type, Class.new(RemoteRecord::Type) do
+      klass = Class.new(RemoteRecord::Type) { @@parent = subclass }
+      klass.class_eval do
         def type
           :string
         end
 
         def cast(remote_resource_id)
-          self.new(remote_resource_id)
+          @@parent.new(remote_resource_id)
         end
 
         def deserialize(value)
-          self.new(remote_resource_id)
+          @@parent.new(value)
         end
 
-        def serialize(remote_resource_representation)
-          remote_resource_representation.id
+        def serialize(representation)
+          representation
         end
       end
+      subclass.const_set :Type, klass
     end
 
-    def self.default_config
-      Config.defaults.merge(remote_record_class: self)
-    end
+    attr_reader :remote_resource_id
 
-    def initialize(reference, options = default_config, initial_attrs = {})
-      @reference = reference
+    def initialize(remote_resource_id,
+      options = Config.defaults.merge(remote_record_class: self),
+      initial_attrs = {}
+    )
+      @remote_resource_id = remote_resource_id
       @options = options
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
+      fetch
     end
 
     def method_missing(method_name, *_args, &_block)
@@ -65,9 +69,16 @@ module RemoteRecord
       @attrs.update(new_attrs)
     end
 
+    def fresh
+      fetch
+      self
+    end
+
     private
 
     def transform(data)
+      return data unless transformers.any?
+
       transformers.reduce(data) do |transformed_data, transformer|
         transformer.new(transformed_data).transform
       end
@@ -82,11 +93,7 @@ module RemoteRecord
 
     def authorization
       authz = @options.authorization
-      authz.respond_to?(:call) ? authz.call(@reference, @options) : authz
-    end
-
-    def remote_resource_id
-      @reference.send(@options.id_field)
+      authz.respond_to?(:call) ? authz.call(@options) : authz
     end
   end
 end
