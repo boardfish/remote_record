@@ -12,20 +12,6 @@ module RemoteRecord
     class_methods do # rubocop:disable Metrics/BlockLength
       attr_accessor :fetching
 
-      def remote_record_class
-        ClassLookup.new(self).remote_record_class(
-          remote_record_config.to_h[:remote_record_class]&.to_s
-        )
-      end
-
-      # Default to an empty config, which falls back to the remote record
-      # class's default config and leaves the remote record class to be inferred
-      # from the reference class name
-      # This method is overridden using RemoteRecord::DSL#remote_record.
-      def remote_record_config
-        Config.new
-      end
-
       def fetching
         @fetching = true if @fetching.nil?
         @fetching
