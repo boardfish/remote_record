@@ -6,7 +6,7 @@ module RemoteRecord
   # record class (a descendant of RemoteRecord::Base). This is done on
   # initialize by calling #get on an instance of the remote record class. These
   # attributes are then accessible on the reference thanks to #method_missing.
-  module Reference # rubocop:disable Metrics/ModuleLength
+  module Reference
     extend ActiveSupport::Concern
 
     class_methods do # rubocop:disable Metrics/BlockLength
@@ -93,7 +93,6 @@ module RemoteRecord
       end
     end
 
-    # rubocop:disable Metrics/BlockLength
     included do
       include ActiveSupport::Rescuable
 
@@ -101,6 +100,5 @@ module RemoteRecord
         remote_resource_id
       end
     end
-    # rubocop:enable Metrics/BlockLength
   end
 end

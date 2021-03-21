@@ -5,7 +5,8 @@ module RemoteRecord
   class Base
     include ActiveSupport::Rescuable
 
-    def self.inherited(subclass)
+    # rubocop:disable Style/ClassVars
+    def self.inherited(subclass) # rubocop:disable Metrics/MethodLength
       klass = Class.new(RemoteRecord::Type) { @@parent = subclass }
       klass.class_eval do
         def self.config
@@ -41,14 +42,15 @@ module RemoteRecord
         end
       end
       subclass.const_set :Type, klass
+      super
     end
+    # rubocop:enable Style/ClassVars
 
     attr_reader :remote_resource_id
 
     def initialize(remote_resource_id,
-      options = Config.defaults.merge(remote_record_class: self),
-      initial_attrs = {}
-    )
+                   options = Config.defaults.merge(remote_record_class: self),
+                   initial_attrs = {})
       @remote_resource_id = remote_resource_id
       @options = options
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
