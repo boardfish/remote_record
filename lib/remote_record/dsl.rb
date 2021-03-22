@@ -13,8 +13,7 @@ module RemoteRecord
         config = RemoteRecord::Config.new(remote_record_class: klass)
         config = yield(config) if block_given?
         DSLPrivate.validate_config(config)
-        define_singleton_method(:remote_record_config) { config }
-        attribute :remote_resource_id, klass::Type.new
+        attribute :remote_resource_id, klass::Type[config].new
       end
     end
   end

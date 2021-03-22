@@ -5,19 +5,36 @@ module RemoteRecord
   class Base
     include ActiveSupport::Rescuable
 
-    def self.inherited(subclass)
+    # rubocop:disable Style/ClassVars
+    def self.inherited(subclass) # rubocop:disable Metrics/MethodLength
       klass = Class.new(RemoteRecord::Type) { @@parent = subclass }
       klass.class_eval do
+        def self.config
+          @@config ||= Config.defaults
+        end
+
+        def self.config=(config)
+          @@config = config
+        end
+
+        def self.[](config)
+          Class.new(self).tap do |configured_type|
+            configured_type.class_eval do
+              @@config = Config.defaults.merge(config)
+            end
+          end
+        end
+
         def type
           :string
         end
 
         def cast(remote_resource_id)
-          @@parent.new(remote_resource_id)
+          @@parent.new(remote_resource_id, @@config)
         end
 
         def deserialize(value)
-          @@parent.new(value)
+          @@parent.new(value, @@config)
         end
 
         def serialize(representation)
@@ -25,14 +42,15 @@ module RemoteRecord
         end
       end
       subclass.const_set :Type, klass
+      super
     end
+    # rubocop:enable Style/ClassVars
 
     attr_reader :remote_resource_id
 
     def initialize(remote_resource_id,
-      options = Config.defaults.merge(remote_record_class: self),
-      initial_attrs = {}
-    )
+                   options = Config.defaults.merge(remote_record_class: self),
+                   initial_attrs = {})
       @remote_resource_id = remote_resource_id
       @options = options
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
@@ -40,6 +58,7 @@ module RemoteRecord
     end
 
     def method_missing(method_name, *_args, &_block)
+      fetch unless @options.memoize
       transform(@attrs).fetch(method_name)
     rescue KeyError
       super

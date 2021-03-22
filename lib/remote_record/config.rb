@@ -41,7 +41,8 @@ module RemoteRecord
       @options
     end
 
-    def merge(**overrides)
+    def merge(config = nil, **overrides)
+      @options.merge!(**config.to_h) if config.present?
       @options.merge!(**overrides)
       self
     end

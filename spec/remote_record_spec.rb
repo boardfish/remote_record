@@ -156,7 +156,7 @@ RSpec.describe RemoteRecord do
       end
     end
 
-    xcontext 'when memoize is false' do
+    context 'when memoize is false' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
           include RemoteRecord
@@ -188,7 +188,7 @@ RSpec.describe RemoteRecord do
     subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
     before { initialization }
 
-    xcontext 'when transform is snake_case' do
+    context 'when transform is snake_case' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
           include RemoteRecord

@@ -6,25 +6,11 @@ module RemoteRecord
   # record class (a descendant of RemoteRecord::Base). This is done on
   # initialize by calling #get on an instance of the remote record class. These
   # attributes are then accessible on the reference thanks to #method_missing.
-  module Reference # rubocop:disable Metrics/ModuleLength
+  module Reference
     extend ActiveSupport::Concern
 
     class_methods do # rubocop:disable Metrics/BlockLength
       attr_accessor :fetching
-
-      def remote_record_class
-        ClassLookup.new(self).remote_record_class(
-          remote_record_config.to_h[:remote_record_class]&.to_s
-        )
-      end
-
-      # Default to an empty config, which falls back to the remote record
-      # class's default config and leaves the remote record class to be inferred
-      # from the reference class name
-      # This method is overridden using RemoteRecord::DSL#remote_record.
-      def remote_record_config
-        Config.new
-      end
 
       def fetching
         @fetching = true if @fetching.nil?
@@ -107,7 +93,6 @@ module RemoteRecord
       end
     end
 
-    # rubocop:disable Metrics/BlockLength
     included do
       include ActiveSupport::Rescuable
 
@@ -115,6 +100,5 @@ module RemoteRecord
         remote_resource_id
       end
     end
-    # rubocop:enable Metrics/BlockLength
   end
 end
