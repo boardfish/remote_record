@@ -36,19 +36,19 @@ module RemoteRecord
     end
     # rubocop:enable Style/ClassVars
 
-    attr_reader :remote_resource_id
+    attr_reader :remote_resource_id, :remote_record_config
 
     def initialize(remote_resource_id,
-                   options = Config.defaults.merge(remote_record_class: self),
+                   remote_record_config = Config.defaults.merge(remote_record_class: self),
                    initial_attrs = {})
       @remote_resource_id = remote_resource_id
-      @options = options
+      @remote_record_config = remote_record_config
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
       @fetched = initial_attrs.present?
     end
 
     def method_missing(method_name, *_args, &_block)
-      fetch unless @options.memoize && @fetched
+      fetch unless @remote_record_config.memoize && @fetched
       transform(@attrs).fetch(method_name)
     rescue KeyError
       super
@@ -96,14 +96,14 @@ module RemoteRecord
 
     # Robots in disguise.
     def transformers
-      @options.transform.map do |transformer_name|
+      @remote_record_config.transform.map do |transformer_name|
         "RemoteRecord::Transformers::#{transformer_name.to_s.camelize}".constantize
       end
     end
 
     def authorization
-      authz = @options.authorization
-      authz.respond_to?(:call) ? authz.call(@options) : authz
+      authz = @remote_record_config.authorization
+      authz.respond_to?(:call) ? authz.call(@remote_record_config) : authz
     end
   end
 end

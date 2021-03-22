@@ -232,10 +232,10 @@ RSpec.describe RemoteRecord do
     end
   end
 
-  xdescribe '#remote_all' do
+  describe '#remote.all' do
     before { initialization }
     subject(:batch_fetch) do
-      reference_const_name.constantize.remote_all
+      reference_const_name.constantize.remote.all
     end
 
     let(:initialize_record) do
@@ -244,15 +244,11 @@ RSpec.describe RemoteRecord do
           client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
         end
 
-        def self.all(&authz_proc)
-          client(&authz_proc).get('todos').body
-        end
-
-        def self.client
+        def client
           Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
             conn.request :json
             conn.response :json
-            conn.headers['Authorization'] = yield if block_given?
+            conn.headers['Authorization'] = authorization
             conn.use Faraday::Response::RaiseError
           end
         end
@@ -266,370 +262,45 @@ RSpec.describe RemoteRecord do
       end)
     end
 
-    it 'makes only one request', :vcr do
-      batch_fetch
-      expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos')).to have_been_made.once
+    # This'll be a different context
+    xcontext 'when there is an implementation for all on the collection' do
+      it 'makes only one request', :vcr do
+        batch_fetch
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos')).to have_been_made.once
+      end
     end
 
-    it 'returns all records', :vcr do
-      expect(batch_fetch.length).to eq(200)
+    context 'when there is no implementation for all on the collection' do
+      it 'returns all records present in the database', :vcr do
+        reference_const_name.constantize.insert_all((1..3).map do |id|
+          { remote_resource_id: id, created_at: Time.now, updated_at: Time.now }
+        end)
+        expect(batch_fetch.length).to eq(3)
+      end
+
+      it 'returns all records as references', :vcr do
+        expect(batch_fetch.all? { |reference| reference.is_a? reference_const_name.constantize }).to eq(true)
+      end
+
+      it 'returns records that respond to attributes', :vcr do
+        expect(batch_fetch.all? { |reference| reference.remote.respond_to? :title }).to eq(true)
+      end
     end
 
-    it 'returns all records as references', :vcr do
-      expect(batch_fetch.all? { |reference| reference.is_a? reference_const_name.constantize }).to eq(true)
-    end
-
-    it 'returns records that respond to attributes', :vcr do
-      expect(batch_fetch.all? { |reference| reference.respond_to? :title }).to eq(true)
-    end
-
-    context 'when an authorization proc is supplied' do
+    context 'when a configuration override is supplied' do
       subject(:batch_fetch) do
-        reference_const_name.constantize.remote_all { 'authz header' }
+        reference_const_name.constantize.remote(config: RemoteRecord::Config.new(authorization: 'authz header')).all
       end
 
       it 'is used in the request', :vcr do
+        reference_const_name.constantize.insert_all(
+          [{ remote_resource_id: 1, created_at: Time.now, updated_at: Time.now }]
+        )
         batch_fetch
         expect(
           a_request(:get,
-                    'https://jsonplaceholder.typicode.com/todos').with(headers: { 'Authorization': 'authz header' })
+                    'https://jsonplaceholder.typicode.com/todos/1').with(headers: { 'Authorization': 'authz header' })
         ).to have_been_made.once
-      end
-    end
-  end
-
-  xdescribe '#remote_where' do
-    before { initialization }
-    subject(:batch_fetch) do
-      reference_const_name.constantize.remote_where(user_id: 1)
-    end
-
-    let(:initialize_record) do
-      stub_const(record_const_name, Class.new(RemoteRecord::Base) do
-        def get
-          client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
-        end
-
-        def self.all(&authz_proc)
-          client(&authz_proc).get('todos').body
-        end
-
-        def self.where(params, &authz_proc)
-          client(&authz_proc).get('todos', RemoteRecord::Transformers::SnakeCase.new(params, :down).transform).body
-        end
-
-        def self.client
-          Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
-            conn.request :json
-            conn.response :json
-            conn.headers['Authorization'] = yield if block_given?
-            conn.use Faraday::Response::RaiseError
-          end
-        end
-      end)
-    end
-
-    let(:initialize_reference) do
-      stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-        include RemoteRecord
-        remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
-      end)
-    end
-
-    it 'makes only one request', :vcr do
-      batch_fetch
-      expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos?userId=1')).to have_been_made.once
-    end
-
-    it 'returns all records', :vcr do
-      expect(batch_fetch.length).to eq(20)
-    end
-
-    it 'returns all records as references', :vcr do
-      expect(batch_fetch.all? { |reference| reference.is_a? reference_const_name.constantize }).to eq(true)
-    end
-
-    it 'returns records that respond to attributes', :vcr do
-      expect(batch_fetch.all? { |reference| reference.respond_to? :title }).to eq(true)
-    end
-
-    context 'when an authorization proc is supplied' do
-      subject(:batch_fetch) do
-        reference_const_name.constantize.remote_where(user_id: 1) { 'authz header' }
-      end
-
-      it 'is used in the request', :vcr do
-        batch_fetch
-        expect(
-          a_request(:get,
-                    'https://jsonplaceholder.typicode.com/todos?userId=1')
-                    .with(headers: { 'Authorization': 'authz header' })
-        ).to have_been_made.once
-      end
-    end
-  end
-
-  xdescribe '#remote_find_by' do
-    before { initialization }
-    subject(:find_by) do
-      reference_const_name.constantize.remote_find_by(user_id: 1)
-    end
-
-    let(:initialize_reference) do
-      stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-        include RemoteRecord
-        remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
-      end)
-    end
-
-    context 'when there is no implementation for #find_by specifically' do
-      let(:initialize_record) do
-        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
-          def get
-            client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
-          end
-
-          def self.all(&authz_proc)
-            client(&authz_proc).get('todos').body
-          end
-
-          def self.where(params, &authz_proc)
-            client(&authz_proc).get('todos', RemoteRecord::Transformers::SnakeCase.new(params, :down).transform).body
-          end
-
-          def self.client
-            Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
-              conn.request :json
-              conn.response :json
-              conn.headers['Authorization'] = yield if block_given?
-              conn.use Faraday::Response::RaiseError
-            end
-          end
-        end)
-      end
-
-      it 'makes only one request', :vcr do
-        find_by
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos?userId=1')).to have_been_made.once
-      end
-
-      it 'returns a remote reference', :vcr do
-        expect(find_by.is_a?(reference_const_name.constantize)).to be true
-      end
-
-      it 'returns a remote reference that responds to attributes', :vcr do
-        expect(find_by.respond_to?(:title)).to eq(true)
-      end
-
-      context 'when an authorization proc is supplied' do
-        subject(:find_by) do
-          reference_const_name.constantize.remote_find_by(user_id: 1) { 'authz header' }
-        end
-
-        it 'is used in the request', :vcr do
-          find_by
-          expect(
-            a_request(:get,
-                      'https://jsonplaceholder.typicode.com/todos?userId=1')
-                      .with(headers: { 'Authorization': 'authz header' })
-          ).to have_been_made.once
-        end
-      end
-    end
-
-    context 'when there is an implementation for #find_by on the remote record class' do
-      let(:initialize_record) do
-        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
-          def get
-            client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
-          end
-
-          def self.all(&authz_proc)
-            client(&authz_proc).get('todos').body
-          end
-
-          def self.where(params, &authz_proc)
-            client(&authz_proc).get('todos', RemoteRecord::Transformers::SnakeCase.new(params, :down).transform).body
-          end
-
-          def self.find_by(user_id:, **_params, &authz_proc)
-            client(&authz_proc).get("todos/#{CGI.escape(user_id.to_s)}").body
-          end
-
-          def self.client
-            Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
-              conn.request :json
-              conn.response :json
-              conn.headers['Authorization'] = yield if block_given?
-              conn.use Faraday::Response::RaiseError
-            end
-          end
-        end)
-      end
-
-      it 'makes only one request', :vcr do
-        find_by
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
-      end
-
-      it 'returns a remote reference', :vcr do
-        expect(find_by.is_a?(reference_const_name.constantize)).to be true
-      end
-
-      it 'returns a remote reference that responds to attributes', :vcr do
-        expect(find_by.respond_to?(:title)).to eq(true)
-      end
-
-      context 'when an authorization proc is supplied' do
-        subject(:find_by) do
-          reference_const_name.constantize.remote_find_by(user_id: 1) { 'authz header' }
-        end
-
-        it 'is used in the request', :vcr do
-          find_by
-          expect(
-            a_request(:get,
-                      'https://jsonplaceholder.typicode.com/todos/1')
-                      .with(headers: { 'Authorization': 'authz header' })
-          ).to have_been_made.once
-        end
-      end
-    end
-  end
-
-  xdescribe '#remote_find_or_initialize_by' do
-    before { initialization }
-    subject(:find_by) do
-      reference_const_name.constantize.remote_find_or_initialize_by(user_id: 1)
-    end
-
-    let(:initialize_reference) do
-      stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
-        include RemoteRecord
-        remote_record remote_record_class: 'RemoteRecord::Dummy::Record'
-      end)
-    end
-
-    context 'when there is no implementation for #find_by specifically' do
-      let(:initialize_record) do
-        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
-          def get
-            client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
-          end
-
-          def self.all(&authz_proc)
-            client(&authz_proc).get('todos').body
-          end
-
-          def self.where(params, &authz_proc)
-            client(&authz_proc).get('todos', RemoteRecord::Transformers::SnakeCase.new(params, :down).transform).body
-          end
-
-          def self.client
-            Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
-              conn.request :json
-              conn.response :json
-              conn.headers['Authorization'] = yield if block_given?
-              conn.use Faraday::Response::RaiseError
-            end
-          end
-        end)
-      end
-
-      it 'makes only one request', :vcr do
-        find_by
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos?userId=1')).to have_been_made.once
-      end
-
-      it 'returns a remote reference', :vcr do
-        expect(find_by.is_a?(reference_const_name.constantize)).to be true
-      end
-
-      it 'returns a remote reference that responds to attributes', :vcr do
-        expect(find_by.respond_to?(:title)).to eq(true)
-      end
-
-      context 'when an authorization proc is supplied' do
-        subject(:find_by) do
-          reference_const_name.constantize.remote_find_by(user_id: 1) { 'authz header' }
-        end
-
-        it 'is used in the request', :vcr do
-          find_by
-          expect(
-            a_request(:get,
-                      'https://jsonplaceholder.typicode.com/todos?userId=1')
-                      .with(headers: { 'Authorization': 'authz header' })
-          ).to have_been_made.once
-        end
-      end
-    end
-
-    context 'when there is an implementation for #find_by on the remote record class' do
-      let(:initialize_record) do
-        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
-          def get
-            client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
-          end
-
-          def self.all(&authz_proc)
-            client(&authz_proc).get('todos').body
-          end
-
-          def self.where(params, &authz_proc)
-            client(&authz_proc).get('todos', RemoteRecord::Transformers::SnakeCase.new(params, :down).transform).body
-          end
-
-          def self.find_by(user_id:, **_params, &authz_proc)
-            client(&authz_proc).get("todos/#{CGI.escape(user_id.to_s)}").body
-          end
-
-          def self.client
-            Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
-              conn.request :json
-              conn.response :json
-              conn.headers['Authorization'] = yield if block_given?
-              conn.use Faraday::Response::RaiseError
-            end
-          end
-        end)
-      end
-
-      let!(:existing_record) do
-        reference_const_name.constantize.no_fetching { |ref| ref.create(remote_resource_id: 1) }
-      end
-
-      it 'makes only one request', :vcr do
-        find_by
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
-      end
-
-      it 'returns a remote reference', :vcr do
-        expect(find_by.is_a?(reference_const_name.constantize)).to be true
-      end
-
-      it 'returns a remote reference that responds to attributes', :vcr do
-        expect(find_by.respond_to?(:title)).to eq(true)
-      end
-
-      it 'returns the database record', :vcr do
-        expect(find_by.id).to eq(existing_record.id)
-        expect(find_by.persisted?).to be true
-      end
-
-      context 'when an authorization proc is supplied' do
-        subject(:find_by) do
-          reference_const_name.constantize.remote_find_by(user_id: 1) { 'authz header' }
-        end
-
-        it 'is used in the request', :vcr do
-          find_by
-          expect(
-            a_request(:get,
-                      'https://jsonplaceholder.typicode.com/todos/1')
-                      .with(headers: { 'Authorization': 'authz header' })
-          ).to have_been_made.once
-        end
       end
     end
   end
