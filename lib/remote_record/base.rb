@@ -54,11 +54,11 @@ module RemoteRecord
       @remote_resource_id = remote_resource_id
       @options = options
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
-      fetch
+      @fetched = initial_attrs.present?
     end
 
     def method_missing(method_name, *_args, &_block)
-      fetch unless @options.memoize
+      fetch unless @options.memoize && @fetched
       transform(@attrs).fetch(method_name)
     rescue KeyError
       super
@@ -82,6 +82,7 @@ module RemoteRecord
 
     def fetch
       @attrs.update(get)
+      @fetched = true
     end
 
     def attrs=(new_attrs)
