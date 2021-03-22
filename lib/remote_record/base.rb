@@ -30,7 +30,7 @@ module RemoteRecord
         end
 
         def cast(remote_resource_id)
-          @@parent.new(remote_resource_id, @@config)
+          remote_resource_id.to_s
         end
 
         def deserialize(value)

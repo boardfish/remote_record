@@ -126,7 +126,7 @@ RSpec.describe RemoteRecord do
   describe '#fetch_remote_resource' do
     before { initialization }
 
-    subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
+    subject(:remote_reference) { reference_const_name.constantize.create(remote_resource_id: 1) }
     context 'when memoize is true' do
       let(:initialize_reference) do
         stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
@@ -185,7 +185,7 @@ RSpec.describe RemoteRecord do
   end
 
   describe 'transform' do
-    subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
+    subject(:remote_reference) { reference_const_name.constantize.create(remote_resource_id: 1) }
     before { initialization }
 
     context 'when transform is snake_case' do
@@ -204,7 +204,7 @@ RSpec.describe RemoteRecord do
     end
   end
 
-  describe '#no_fetching' do
+  describe 'querying' do
     before { initialization }
     let(:initialize_reference) do
       stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
@@ -214,9 +214,8 @@ RSpec.describe RemoteRecord do
     end
 
     subject(:remote_reference) do
-      x = reference_const_name.constantize.create(remote_resource_id: 1)
-      require 'byebug'; byebug
-      reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1).remote }
+      reference_const_name.constantize.create(remote_resource_id: 1)
+      reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1) }
     end
 
     it 'does not make any requests in the no_fetching context', :vcr do
@@ -229,11 +228,7 @@ RSpec.describe RemoteRecord do
     end
 
     it 'still responds to remote_resource_id', :vcr do
-      expect(remote_reference.remote.id).to eq('1')
-    end
-
-    it 'raises NoMethodError for attributes', :vcr do
-      expect { remote_reference.remote.completed }.to raise_error NoMethodError
+      expect(remote_reference.remote.remote_resource_id).to eq('1')
     end
   end
 
