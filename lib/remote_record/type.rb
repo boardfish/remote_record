@@ -5,19 +5,21 @@ module RemoteRecord
   # remote resource.
   class Type < ActiveRecord::Type::Value
     def type
-      raise 'type not defined'
+      :string
     end
 
     def cast(_remote_resource_id)
       raise 'cast not defined'
     end
 
-    def deserialize(_value)
-      raise 'deserialize not defined'
+    def deserialize(value)
+      cast(value)
     end
 
-    def serialize(_remote_resource_representation)
-      raise 'serialize not defined'
+    def serialize(representation)
+      return representation.remote_resource_id if representation.respond_to? :remote_resource_id
+
+      representation.to_s
     end
   end
 end

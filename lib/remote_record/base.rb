@@ -25,20 +25,10 @@ module RemoteRecord
           end
         end
 
-        def type
-          :string
-        end
-
         def cast(remote_resource_id)
-          remote_resource_id.to_s
-        end
+          return remote_resource_id if remote_resource_id.is_a? @@parent
 
-        def deserialize(value)
-          @@parent.new(value, @@config)
-        end
-
-        def serialize(representation)
-          representation
+          @@parent.new(remote_resource_id, @@config)
         end
       end
       subclass.const_set :Type, klass
