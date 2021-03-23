@@ -19,6 +19,11 @@ module RemoteRecord
       fetch_all_scoped_records(@relation)
     end
 
+    def where
+      raise NotImplementedError.new,
+            "Implement #where on #{self.class.name} to filter records using the API."
+    end
+
     private
 
     # Override this to define more succinct ways to request all records at once.
