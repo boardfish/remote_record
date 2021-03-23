@@ -215,10 +215,10 @@ RSpec.describe RemoteRecord do
 
     subject(:remote_reference) do
       reference_const_name.constantize.create(remote_resource_id: 1)
-      reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1) }
+      reference_const_name.constantize.find_by(remote_resource_id: 1)
     end
 
-    it 'does not make any requests in the no_fetching context', :vcr do
+    it 'does not make any requests', :vcr do
       remote_reference
       expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
     end
