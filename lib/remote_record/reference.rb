@@ -24,10 +24,6 @@ module RemoteRecord
         self.fetching = true
         block_return_value
       end
-
-      def remote(id_field = :remote_resource_id, config: nil)
-        RemoteRecord::Collection.new(all, config, id: id_field)
-      end
     end
 
     included do

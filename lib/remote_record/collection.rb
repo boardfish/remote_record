@@ -31,5 +31,17 @@ module RemoteRecord
         record.tap { |r| r.remote.fresh }
       end
     end
+
+    def match_remote_resources(response)
+      @relation.map do |record|
+        record.remote.attrs = response.find do |resource|
+          yield(resource).to_s == record.public_send(@id_field).remote_resource_id
+        end
+      end
+    end
+
+    def match_remote_resources_by_id(response)
+      match_remote_resources(response) { |resource| resource['id'] }
+    end
   end
 end

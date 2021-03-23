@@ -10,10 +10,13 @@ module RemoteRecord
     class_methods do
       def remote_record(remote_record_class: nil)
         klass = RemoteRecord::ClassLookup.new(self).remote_record_class(remote_record_class)
-        config = RemoteRecord::Config.new(remote_record_class: klass)
-        config = yield(config) if block_given?
-        DSLPrivate.validate_config(config)
-        attribute :remote_resource_id, klass::Type[config].new
+        base_config = RemoteRecord::Config.new(remote_record_class: klass)
+        base_config = yield(base_config) if block_given?
+        DSLPrivate.validate_config(base_config)
+        attribute :remote_resource_id, klass::Type[base_config].new
+        define_singleton_method(:remote) do |id_field = :remote_resource_id, config: nil|
+          klass::Collection.new(all, config, id: id_field)
+        end
       end
     end
   end
