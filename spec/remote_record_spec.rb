@@ -215,10 +215,10 @@ RSpec.describe RemoteRecord do
 
     subject(:remote_reference) do
       reference_const_name.constantize.create(remote_resource_id: 1)
-      reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1) }
+      reference_const_name.constantize.find_by(remote_resource_id: 1)
     end
 
-    it 'does not make any requests in the no_fetching context', :vcr do
+    it 'does not make any requests', :vcr do
       remote_reference
       expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
     end
@@ -262,11 +262,58 @@ RSpec.describe RemoteRecord do
       end)
     end
 
-    # This'll be a different context
-    xcontext 'when there is an implementation for all on the collection' do
+    context 'when there is an implementation for all on the collection' do
+      let(:initialize_record) do
+        stub_const(record_const_name, Class.new(RemoteRecord::Base) do
+          def get
+            client.get("todos/#{CGI.escape(remote_resource_id.to_s)}").body
+          end
+
+          private
+
+          def client
+            Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
+              conn.request :json
+              conn.response :json
+              conn.use Faraday::Response::RaiseError
+            end
+          end
+        end)
+        stub_const("#{record_const_name}::Collection", Class.new(RemoteRecord::Collection) do
+          def all
+            response = client.get('todos').body
+            match_remote_resources_by_id(response)
+          end
+
+          private
+
+          def client
+            Faraday.new('https://jsonplaceholder.typicode.com') do |conn|
+              conn.request :json
+              conn.response :json
+              conn.use Faraday::Response::RaiseError
+            end
+          end
+        end)
+      end
+      it 'returns all records present in the database', :vcr do
+        reference_const_name.constantize.insert_all((1..3).map do |id|
+          { remote_resource_id: id, created_at: Time.now, updated_at: Time.now }
+        end)
+        expect(batch_fetch.length).to eq(3)
+      end
+
       it 'makes only one request', :vcr do
         batch_fetch
         expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos')).to have_been_made.once
+      end
+
+      it 'returns all records as references', :vcr do
+        expect(batch_fetch.all? { |reference| reference.is_a? reference_const_name.constantize }).to eq(true)
+      end
+
+      it 'returns records that respond to attributes', :vcr do
+        expect(batch_fetch.all? { |reference| reference.remote.respond_to? :title }).to eq(true)
       end
     end
 

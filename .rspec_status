@@ -1,25 +1,28 @@
-example_id                            | status  | run_time        |
-------------------------------------- | ------- | --------------- |
-./spec/remote_record_spec.rb[1:1:1:1] | passed  | 0.08147 seconds |
-./spec/remote_record_spec.rb[1:1:2:1] | passed  | 0.00046 seconds |
-./spec/remote_record_spec.rb[1:1:3:1] | passed  | 0.00052 seconds |
-./spec/remote_record_spec.rb[1:1:4:1] | passed  | 0.00043 seconds |
-./spec/remote_record_spec.rb[1:1:5:1] | passed  | 0.00343 seconds |
-./spec/remote_record_spec.rb[1:2:1:1] | passed  | 0.02007 seconds |
-./spec/remote_record_spec.rb[1:2:1:2] | passed  | 0.00781 seconds |
-./spec/remote_record_spec.rb[1:2:1:3] | passed  | 0.01206 seconds |
-./spec/remote_record_spec.rb[1:2:2:1] | passed  | 0.00206 seconds |
-./spec/remote_record_spec.rb[1:2:2:2] | passed  | 0.01201 seconds |
-./spec/remote_record_spec.rb[1:2:2:3] | passed  | 0.00723 seconds |
-./spec/remote_record_spec.rb[1:3:1:1] | passed  | 0.0116 seconds  |
-./spec/remote_record_spec.rb[1:4:1]   | passed  | 0.00408 seconds |
-./spec/remote_record_spec.rb[1:4:2]   | passed  | 0.00505 seconds |
-./spec/remote_record_spec.rb[1:4:3]   | passed  | 0.00278 seconds |
-./spec/remote_record_spec.rb[1:5:1:1] | pending | 0.00001 seconds |
-./spec/remote_record_spec.rb[1:5:2:1] | passed  | 0.01867 seconds |
-./spec/remote_record_spec.rb[1:5:2:2] | passed  | 0.00099 seconds |
-./spec/remote_record_spec.rb[1:5:2:3] | passed  | 0.00123 seconds |
-./spec/remote_record_spec.rb[1:5:3:1] | passed  | 0.00847 seconds |
-./spec/transformers_spec.rb[1:1:1:1]  | passed  | 0.0002 seconds  |
-./spec/transformers_spec.rb[1:1:2:1]  | passed  | 0.00024 seconds |
-./spec/transformers_spec.rb[1:1:3:1]  | passed  | 0.00021 seconds |
+example_id                            | status | run_time        |
+------------------------------------- | ------ | --------------- |
+./spec/remote_record_spec.rb[1:1:1:1] | passed | 0.08084 seconds |
+./spec/remote_record_spec.rb[1:1:2:1] | passed | 0.00047 seconds |
+./spec/remote_record_spec.rb[1:1:3:1] | passed | 0.00052 seconds |
+./spec/remote_record_spec.rb[1:1:4:1] | passed | 0.00042 seconds |
+./spec/remote_record_spec.rb[1:1:5:1] | passed | 0.00326 seconds |
+./spec/remote_record_spec.rb[1:2:1:1] | passed | 0.02047 seconds |
+./spec/remote_record_spec.rb[1:2:1:2] | passed | 0.00777 seconds |
+./spec/remote_record_spec.rb[1:2:1:3] | passed | 0.01193 seconds |
+./spec/remote_record_spec.rb[1:2:2:1] | passed | 0.00215 seconds |
+./spec/remote_record_spec.rb[1:2:2:2] | passed | 0.01241 seconds |
+./spec/remote_record_spec.rb[1:2:2:3] | passed | 0.00746 seconds |
+./spec/remote_record_spec.rb[1:3:1:1] | passed | 0.01144 seconds |
+./spec/remote_record_spec.rb[1:4:1]   | passed | 0.00394 seconds |
+./spec/remote_record_spec.rb[1:4:2]   | passed | 0.00362 seconds |
+./spec/remote_record_spec.rb[1:4:3]   | passed | 0.00264 seconds |
+./spec/remote_record_spec.rb[1:5:1:1] | passed | 0.00898 seconds |
+./spec/remote_record_spec.rb[1:5:1:2] | passed | 0.00769 seconds |
+./spec/remote_record_spec.rb[1:5:1:3] | passed | 0.00674 seconds |
+./spec/remote_record_spec.rb[1:5:1:4] | passed | 0.00631 seconds |
+./spec/remote_record_spec.rb[1:5:2:1] | passed | 0.01889 seconds |
+./spec/remote_record_spec.rb[1:5:2:2] | passed | 0.00106 seconds |
+./spec/remote_record_spec.rb[1:5:2:3] | passed | 0.00076 seconds |
+./spec/remote_record_spec.rb[1:5:3:1] | passed | 0.00869 seconds |
+./spec/transformers_spec.rb[1:1:1:1]  | passed | 0.00021 seconds |
+./spec/transformers_spec.rb[1:1:2:1]  | passed | 0.00021 seconds |
+./spec/transformers_spec.rb[1:1:3:1]  | passed | 0.00018 seconds |

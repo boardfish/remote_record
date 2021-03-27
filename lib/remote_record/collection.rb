@@ -19,6 +19,11 @@ module RemoteRecord
       fetch_all_scoped_records(@relation)
     end
 
+    def where
+      raise NotImplementedError.new,
+            "Implement #where on #{self.class.name} to filter records using the API."
+    end
+
     private
 
     # Override this to define more succinct ways to request all records at once.
@@ -30,6 +35,18 @@ module RemoteRecord
         record.remote.remote_record_config.merge(@config)
         record.tap { |r| r.remote.fresh }
       end
+    end
+
+    def match_remote_resources(response)
+      @relation.map do |record|
+        record.remote.attrs = response.find do |resource|
+          yield(resource).to_s == record.public_send(@id_field).remote_resource_id
+        end
+      end
+    end
+
+    def match_remote_resources_by_id(response)
+      match_remote_resources(response) { |resource| resource['id'] }
     end
   end
 end

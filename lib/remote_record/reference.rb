@@ -9,27 +9,6 @@ module RemoteRecord
   module Reference
     extend ActiveSupport::Concern
 
-    class_methods do
-      attr_accessor :fetching
-
-      def fetching
-        @fetching = true if @fetching.nil?
-        @fetching
-      end
-
-      # Disable fetching for all records initialized in the block.
-      def no_fetching
-        self.fetching = false
-        block_return_value = yield(self)
-        self.fetching = true
-        block_return_value
-      end
-
-      def remote(id_field = :remote_resource_id, config: nil)
-        RemoteRecord::Collection.new(all, config, id: id_field)
-      end
-    end
-
     included do
       include ActiveSupport::Rescuable
 

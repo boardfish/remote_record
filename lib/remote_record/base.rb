@@ -6,7 +6,11 @@ module RemoteRecord
     include ActiveSupport::Rescuable
 
     # rubocop:disable Style/ClassVars
+    # rubocop:disable Metrics/AbcSize
+    # When you inherit from `Base`, it'll set up an Active Record Type for you
+    # available on its Type constant. It'll also have a Collection.
     def self.inherited(subclass) # rubocop:disable Metrics/MethodLength
+      # Active Record Type setup
       klass = Class.new(RemoteRecord::Type) { @@parent = subclass }
       klass.class_eval do
         def self.config
@@ -32,8 +36,10 @@ module RemoteRecord
         end
       end
       subclass.const_set :Type, klass
+      subclass.const_set :Collection, Class.new(RemoteRecord::Collection) unless subclass.const_defined? :Collection
       super
     end
+    # rubocop:enable Metrics/AbcSize
     # rubocop:enable Style/ClassVars
 
     attr_reader :remote_resource_id, :remote_record_config
@@ -60,14 +66,6 @@ module RemoteRecord
 
     def get
       raise NotImplementedError.new, '#get should return a hash of data that represents the remote record.'
-    end
-
-    def self.all
-      raise NotImplementedError.new, '#all should return an array of hashes of data that represent remote records.'
-    end
-
-    def self.where(_params)
-      raise NotImplementedError.new, '#where should return an array of hashes of data that represent remote records.'
     end
 
     def fetch
