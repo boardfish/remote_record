@@ -1,4 +1,4 @@
-![RemoteRecord: Ready-made remote resource structures.](doc/header.svg)
+![Remote Record: Ready-made remote resource structures.](doc/header.svg)
 
 ---
 
@@ -9,12 +9,12 @@ Every API speaks a different language. Maybe it's REST, maybe it's SOAP, maybe
 it's GraphQL. Maybe it's got its own Ruby client, or maybe you need to roll your
 own. But what if you could just pretend it existed in your database?
 
-RemoteRecord provides a consistent ActiveRecord inspired interface for all of
-your application's APIs. Store remote resources by ID, and RemoteRecord will
-auto-populate instances of your ActiveRecord model with their attributes from
-the API. Whether you're dealing with a user on GitHub, a track on Spotify, a
-place on Google Maps, or a resource on your internal infrastructure, you can use
-RemoteRecord to wrap fetching it.
+Remote Record provides a consistent ActiveRecord inspired interface for all of
+your application's APIs. Store remote resources by ID, and Remote Record will
+let you access objects containing their attributes from the API. Whether you're
+dealing with a user on GitHub, a track on Spotify, a place on Google Maps, or a
+resource on your internal infrastructure, you can use Remote Record to wrap
+fetching it.
 
 ## Setup
 
@@ -31,7 +31,7 @@ remote resource. In this example, it's `RemoteRecord::GitHub::User`.
 
 ### Creating a remote record class
 
-A standard RemoteRecord class looks like this. It should have a `get` method,
+A standard Remote Record class looks like this. It should have a `get` method,
 which returns a hash of data you'd like to query on the user.
 
 `RemoteRecord::Base` exposes private methods for the `remote_resource_id` and
@@ -46,6 +46,8 @@ module RemoteRecord
         client.user(remote_resource_id)
       end
 
+      # Implement the Collection class here for fetching multiple records.
+
       private
 
       def client
@@ -56,10 +58,22 @@ module RemoteRecord
 end
 ```
 
+These classes can be used in isolation and don't directly depend on Active
+Record. You can use them outside of the context of Active Record or Rails:
+
+```ruby
+RemoteRecord::GitHub::User.new(1)
+=> <RemoteRecord::GitHub::User attrs={}>
+```
+
+If you call `fresh` or try to access an attribute, Remote Record will fetch the
+resource and put its data in this instance.
+
 ### Creating a remote reference
 
-To start using your remote record class, `include RemoteRecord` into your reference. Now, whenever
-you initialize an instance of your class, it'll be fetched.
+To start using your remote record class, `include RemoteRecord` into your
+reference. Now, whenever you initialize an instance of your class, it'll be
+fetched.
 
 Calling `remote_record` in addition to this lets you set some options:
 
@@ -69,7 +83,7 @@ Calling `remote_record` in addition to this lets you set some options:
 | id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID                                                                                                                    |
 | authorization | `''`                     | An object that can be used by the remote record class to authorize a request. This can be a value, or a proc that returns a value that can be used within the remote record class. |
 | memoize       | true                     | Whether reference instances should memoize the response that populates them                                                                                                        |
-| transform     | []                       | Whether the response should be put through a transformer (under RemoteRecord::Transformers). Currently, only `[:snake_case]` is available.                                         |
+| transform     | []                       | Whether the response should be put through a transformer (under `RemoteRecord::Transformers`). Currently, only `[:snake_case]` is available.                                         |
 
 ```ruby
 module GitHub
@@ -90,7 +104,7 @@ end
 ```
 
 If your API doesn't require authentication at all, you don't even need to
-configure it. So at its best, RemoteRecord can be as lightweight as:
+configure it. So at its best, Remote Record can be as lightweight as:
 
 ```ruby
 class JsonPlaceholderAPIReference < ApplicationRecord
@@ -108,104 +122,109 @@ end
 
 ## Usage
 
-Now you've got everything lined up to start using your remote reference.
+Now you've got the basics lined up to start using your remote reference.
 
-Whenever a `GitHub::UserReference` is initialized, e.g. by calling:
-
-```ruby
-user.github_user_references.first
-```
-
-...it'll be populated with the GitHub user's data. You can call methods that
-return attributes on the user, like `#login` or `#html_url`.
-
-By default, this'll only make a request on initialize. For services that manage
-caching by way of expiry or ETags, I recommend using `faraday-http-cache` for
-your clients and setting `memoize` to `false`. Remote Record will eventually
-gain support for caching.
-
-### `remote_all` and `remote_where`
-
-If you're able to fetch multiple records at once from the API, implement the
-`self.all` method on your remote record class. This should return an array of
-hashes that can be used to initialize a set of references.
-
-This can optionally take a block
-for authorization - note that it won't use the auth you've configured and that
-you'll always have to supply that inline. For example:
+Whenever you call `remote` on a `GitHub::UserReference`:
 
 ```ruby
-module RemoteRecord
-  module GitHub
-    # :nodoc:
-    class User < RemoteRecord::Base
-      def get
-        client.user(remote_resource_id)
-      end
-
-      def self.all
-        Octokit::Client.new(access_token: yield).users
-      end
-
-      private
-
-      def client
-        Octokit::Client.new(access_token: authorization)
-      end
-    end
-  end
-end
+user.github_user_references.first.remote
 ```
 
-Now you can call `remote_all` on remote reference classes that use
-`RemoteRecord::GitHub::User`, like this:
+...you'll be able to use the GitHub user's data on an instance of
+`RemoteRecord::GitHub::User`. You can call methods that return attributes on the
+user, like `#login` or `#html_url`.
 
-```ruby
-GitHub::UserReference.remote_all { GITHUB_PERSONAL_ACCESS_TOKEN }
-```
+For services that manage caching by way of expiry or ETags, I recommend using
+`faraday-http-cache` for your clients and setting `memoize` to `false`. Remote
+Record may eventually gain native support for caching your records to the
+database.
 
-`remote_where` works in the same way, but with a parameter:
+### `remote` scopes
+
+Remote Record also provides extensions to Active Record scopes. You can call
+`remote` on a scope to fetch all the remote resources at once. By default, this
+will use a single request per resource, which isn't often optimal.
+
+Implement the `Collection` class under your remote record class to fetch
+multiple records from the API in a single request. `all` should return an array
+of references.
+
+Inheriting from `RemoteRecord::Collection` grants you some convenience methods
+you can use to pair the remote resources from the response with your existing
+references. Check out the class file under `lib/remote_record` for more details.
 
 ```ruby
 module RemoteRecord
   module GitHub
     # :nodoc:
     class User < RemoteRecord::Base
-      def get
-        client.user(remote_resource_id)
-      end
+      # ...
+      class Collection < RemoteRecord::Collection
+        def all
+          response = client.all_users
+          match_remote_resources_by_id(response)
+        end
 
-      def self.all
-        Octokit::Client.new(access_token: yield).users
-      end
+        private
 
-      def self.where(query)
-        Octokit::Client.new(access_token: yield).search_users(query)
-      end
-
-      private
-
-      def client
-        Octokit::Client.new(access_token: authorization)
+        def client
+          Octokit::Client.new
+        end
       end
     end
   end
 end
 ```
 
-Now you can call `remote_where` on remote reference classes that use
+Now you're ready to fetch all your resources at once:
+
+```ruby
+GitHub::UserReference.remote.all
+```
+
+`remote.where` works in the same way, but with a parameter:
+
+```ruby
+module RemoteRecord
+  module GitHub
+    # :nodoc:
+    class User < RemoteRecord::Base
+      # ...
+      class Collection < RemoteRecord::Collection
+        def all
+          response = client.all_users
+          match_remote_resources_by_id(response)
+        end
+
+        def where(query)
+          response = client.search_users(query)
+          match_remote_resources_by_id(response)
+        end
+
+        private
+
+        def client
+          Octokit::Client.new
+        end
+      end
+    end
+  end
+end
+```
+
+Now you can call `remote.where` on remote reference classes that use
 `RemoteRecord::GitHub::User`, like this:
 
 ```ruby
-GitHub::UserReference.remote_where('q=tom+repos:%3E42+followers:%3E1000') { GITHUB_PERSONAL_ACCESS_TOKEN }
+GitHub::UserReference.remote.where('q=tom+repos:%3E42+followers:%3E1000')
 ```
 
-It's recommended that you include something in `self.where` to filter incoming
+It's recommended that you include something in `where` to filter incoming
 params. Ideally, you want to expose an interface that's as ActiveRecord-like as
 possible, e.g.:
 
 ```ruby
-GitHub::UserReference.remote_where(q: 'tom', repos: '>42', followers: '>1000') { GITHUB_PERSONAL_ACCESS_TOKEN }
+GitHub::UserReference.remote_where(q: 'tom', repos: '>42', followers: '>1000')
 ```
 
 It's recommended that you write a `Transformer` to do this. Check out
@@ -215,55 +234,15 @@ It's recommended that you write a `Transformer` to do this. Check out
 
 Behind the scenes, `remote_all` initializes references with a set of
 `initial_attrs`. You can do the same! If you've already fetched the data for an
-object, just pass it to `new` for your reference class under the
-`initial_attrs:`  keyword parameter, like this:
+object, set it via `attrs`, like this:
 
 ```ruby
 todo = { id: 1, title: 'Hello world' }
-TodoReference.new(remote_resource_id: todo[:id], initial_attrs: todo)
+todo_reference = TodoReference.new(remote_resource_id: todo[:id])
+todo_reference.remote.attrs = todo
 ```
 
 ### Forcing a fresh request
 
-You might want to force a fresh request in some instances, even if you're using
-`memoize`. To do this, call `fresh` on a reference, and it'll be repopulated.
-
-### Skip fetching
-
-You might not want to make a request on initialize sometimes. In this case, pass
-`fetching: false` when creating or initializing references to make sure the
-resource isn't fetched.
-
-When querying for records using ActiveRecord alone, you might want to do so
-within a `no_fetching` context:
-
-```ruby
-TodoReference.no_fetching { |model| model.where(remote_resource_id: 1) }
-```
-
-Any records initialized within a `no_fetching` context won't be requested. It's
-sort of like a `Faraday` cage, pun entirely intended.
-
-If you're using `remote_all` or `remote_where` to fetch using your API, that'll
-automatically use this behind the scenes, then set `attrs` to the response
-value.
-
-### Finding a record without having its canonical ID
-
-On many platforms, you might find yourself searching for users by email or
-username. Those aren't canonical IDs - they could change. But searching for them
-by either of those things is a safe bet as a user, nine times out of ten.
-
-Similarly, you (or your users) might not always have a remote resource's ID
-upfront. You might, however, have something unique enough to discern it from
-other records, like a user-facing ID. A good example is a pull request reference
-on GitHub - using the repo name, owner's username, and pull request ID, you can
-find a pull request.
-
-Of course, that shouldn't be your canonical source, because two of those things
-could change. You could change your username, and you could rename the repo. But
-it's useful to be able to search by those things, right?
-
-Implement `find_by` on your remote_record class, and RemoteRecord will use it.
-If you don't, RemoteRecord will fall back to `remote_where`. This takes the same
-params as other class-level RemoteRecord methods, including an auth proc.
+You might want to force a fresh request in some instances. To do this, call
+`fresh` on a reference, and it'll be repopulated.
