@@ -166,16 +166,16 @@ RSpec.describe RemoteRecord do
         end)
       end
 
-      it 'is requested on initialize', :vcr do
+      it 'is not requested on initialize', :vcr do
         remote_reference.remote
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
       end
 
-      it 'is requested again on attribute access', :vcr do
+      it 'is requested on attribute access', :vcr do
         remote_reference.remote
         remote_reference.remote.completed
         remote_reference.remote.title
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.times(3)
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.times(2)
       end
 
       it 'returns the attribute value', :vcr do
@@ -185,7 +185,7 @@ RSpec.describe RemoteRecord do
   end
 
   describe 'transform' do
-    subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1) }
+    subject(:remote_reference) { reference_const_name.constantize.create(remote_resource_id: 1) }
     before { initialization }
 
     context 'when transform is snake_case' do
@@ -204,8 +204,7 @@ RSpec.describe RemoteRecord do
     end
   end
 
-  # Not sure if this will be needed.
-  xdescribe 'disable fetching' do
+  describe 'querying' do
     before { initialization }
     let(:initialize_reference) do
       stub_const(reference_const_name, Class.new(ActiveRecord::Base) do
@@ -214,49 +213,22 @@ RSpec.describe RemoteRecord do
       end)
     end
 
-    context 'when using #new' do
-      subject(:remote_reference) { reference_const_name.constantize.new(remote_resource_id: 1, fetching: false) }
-
-      it 'does not make any requests' do
-        remote_reference
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
-      end
-
-      it 'still returns a Dummy::RecordReference' do
-        expect(remote_reference).to be_a Dummy::RecordReference
-      end
-
-      it 'still responds to remote_resource_id' do
-        expect(remote_reference.remote_resource_id).to eq('1')
-      end
-
-      it 'raises NoMethodError for attributes' do
-        expect { remote_reference.completed }.to raise_error NoMethodError
-      end
+    subject(:remote_reference) do
+      reference_const_name.constantize.create(remote_resource_id: 1)
+      reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1) }
     end
 
-    context 'when using #find_by' do
-      subject(:remote_reference) do
-        reference_const_name.constantize.create(remote_resource_id: 1)
-        reference_const_name.constantize.no_fetching { |r| r.find_by(remote_resource_id: 1) }
-      end
+    it 'does not make any requests in the no_fetching context', :vcr do
+      remote_reference
+      expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).not_to have_been_made
+    end
 
-      it 'does not make any requests in the no_fetching context', :vcr do
-        remote_reference
-        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos/1')).to have_been_made.once
-      end
+    it 'still returns a Dummy::RecordReference', :vcr do
+      expect(remote_reference).to be_a Dummy::RecordReference
+    end
 
-      it 'still returns a Dummy::RecordReference', :vcr do
-        expect(remote_reference).to be_a Dummy::RecordReference
-      end
-
-      it 'still responds to remote_resource_id', :vcr do
-        expect(remote_reference.remote_resource_id).to eq('1')
-      end
-
-      it 'raises NoMethodError for attributes', :vcr do
-        expect { remote_reference.completed }.to raise_error NoMethodError
-      end
+    it 'still responds to remote_resource_id', :vcr do
+      expect(remote_reference.remote.remote_resource_id).to eq('1')
     end
   end
 

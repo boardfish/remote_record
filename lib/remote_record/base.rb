@@ -25,20 +25,10 @@ module RemoteRecord
           end
         end
 
-        def type
-          :string
-        end
-
         def cast(remote_resource_id)
+          return remote_resource_id if remote_resource_id.is_a? @@parent
+
           @@parent.new(remote_resource_id, @@config)
-        end
-
-        def deserialize(value)
-          @@parent.new(value, @@config)
-        end
-
-        def serialize(representation)
-          representation
         end
       end
       subclass.const_set :Type, klass
@@ -54,11 +44,11 @@ module RemoteRecord
       @remote_resource_id = remote_resource_id
       @options = options
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
-      fetch
+      @fetched = initial_attrs.present?
     end
 
     def method_missing(method_name, *_args, &_block)
-      fetch unless @options.memoize
+      fetch unless @options.memoize && @fetched
       transform(@attrs).fetch(method_name)
     rescue KeyError
       super
@@ -82,6 +72,7 @@ module RemoteRecord
 
     def fetch
       @attrs.update(get)
+      @fetched = true
     end
 
     def attrs=(new_attrs)
