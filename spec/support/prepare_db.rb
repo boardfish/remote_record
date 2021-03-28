@@ -5,6 +5,7 @@ class PrepareDb < ActiveRecord::Migration[5.2]
     down
     create_table :record_references do |table|
       table.string :remote_resource_id
+      table.string :node_id
       table.timestamps
     end
   end

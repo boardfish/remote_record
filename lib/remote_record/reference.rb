@@ -11,10 +11,6 @@ module RemoteRecord
 
     included do
       include ActiveSupport::Rescuable
-
-      def remote
-        remote_resource_id
-      end
     end
   end
 end

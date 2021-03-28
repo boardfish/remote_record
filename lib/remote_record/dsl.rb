@@ -8,14 +8,17 @@ module RemoteRecord
   module DSL
     extend ActiveSupport::Concern
     class_methods do
-      def remote_record(remote_record_class: nil)
+      def remote_record(remote_record_class: nil, field: :remote_resource_id)
         klass = RemoteRecord::ClassLookup.new(self).remote_record_class(remote_record_class)
         base_config = RemoteRecord::Config.new(remote_record_class: klass)
         base_config = yield(base_config) if block_given?
         DSLPrivate.validate_config(base_config)
-        attribute :remote_resource_id, klass::Type[base_config].new
-        define_singleton_method(:remote) do |id_field = :remote_resource_id, config: nil|
+        attribute field, klass::Type[base_config].new
+        define_singleton_method(:remote) do |id_field = field, config: nil|
           klass::Collection.new(all, config, id: id_field)
+        end
+        define_method(:remote) do |id_field = field|
+          self[field]
         end
       end
     end
