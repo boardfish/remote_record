@@ -134,7 +134,9 @@ RSpec.describe RemoteRecord do
 
       it 'uses the given ID field instead of the default' do
         initialization
-        expect(reference_const_name.constantize.new(remote_resource_id: 1, node_id: 'abc').remote.remote_resource_id).to eq('abc')
+        expect(
+          reference_const_name.constantize.new(remote_resource_id: 1, node_id: 'abc').remote.remote_resource_id
+        ).to eq('abc')
       end
     end
   end

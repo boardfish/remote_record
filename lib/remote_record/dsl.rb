@@ -17,9 +17,7 @@ module RemoteRecord
         define_singleton_method(:remote) do |id_field = field, config: nil|
           klass::Collection.new(all, config, id: id_field)
         end
-        define_method(:remote) do |id_field = field|
-          self[field]
-        end
+        define_method(:remote) { |id_field = field| self[id_field] }
       end
     end
   end
