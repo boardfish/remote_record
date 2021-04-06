@@ -42,6 +42,7 @@ module RemoteRecord
         record.remote.attrs = response.find do |resource|
           yield(resource).to_s == record.public_send(@id_field).remote_resource_id
         end
+        record
       end
     end
 
