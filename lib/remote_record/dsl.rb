@@ -17,7 +17,7 @@ module RemoteRecord
         define_singleton_method(:remote) do |id_field = field, config: nil|
           klass::Collection.new(all, config, id: id_field)
         end
-        define_method(:remote) { |id_field = field| self[id_field].tap { |record| record.remote_record_config.merge(authorization_source: self) } }
+        define_method(:remote) { |id_field = field| self[id_field].tap { |record| record.remote_record_config.merge!(authorization_source: self) } }
       end
     end
   end

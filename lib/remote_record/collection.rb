@@ -32,7 +32,7 @@ module RemoteRecord
     # have in your database.
     def fetch_all_scoped_records(relation)
       relation.map do |record|
-        record.remote.remote_record_config.merge(@config)
+        record.remote.remote_record_config.merge!(@config)
         record.tap { |r| r.remote.fresh }
       end
     end

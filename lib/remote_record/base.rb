@@ -16,7 +16,7 @@ module RemoteRecord
         self.parent = subclass
         def self.[](config_override)
           Class.new(self).tap do |configured_type|
-            configured_type.config.merge(config_override)
+            configured_type.config.merge!(config_override)
           end
         end
 

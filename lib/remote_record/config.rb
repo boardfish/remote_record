@@ -43,6 +43,11 @@ module RemoteRecord
     end
 
     def merge(config = nil, **overrides)
+      @options.yield_self { |options| options.merge(**(config || {}).to_h) }
+              .yield_self { |options| options.merge(**overrides) }
+    end
+
+    def merge!(config = nil, **overrides)
       @options.merge!(**config.to_h) if config.present?
       @options.merge!(**overrides)
       self
