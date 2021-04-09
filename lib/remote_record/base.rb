@@ -42,10 +42,11 @@ module RemoteRecord
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Style/ClassVars
 
-    attr_reader :remote_resource_id, :remote_record_config
+    attr_reader :remote_resource_id
+    attr_accessor :remote_record_config
 
     def initialize(remote_resource_id,
-                   remote_record_config = Config.defaults.merge(remote_record_class: self),
+                   remote_record_config = Config.defaults,
                    initial_attrs = {})
       @remote_resource_id = remote_resource_id
       @remote_record_config = remote_record_config
@@ -101,7 +102,7 @@ module RemoteRecord
 
     def authorization
       authz = @remote_record_config.authorization
-      authz.respond_to?(:call) ? authz.call(@remote_record_config) : authz
+      authz.respond_to?(:call) ? authz.call(@remote_record_config.authorization_source) : authz
     end
   end
 end
