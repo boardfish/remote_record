@@ -52,5 +52,9 @@ module RemoteRecord
       @options.merge!(**overrides)
       self
     end
+
+    def ==(o)
+      o.to_h == @options
+    end
   end
 end
