@@ -11,28 +11,19 @@ module RemoteRecord
     # available on its Type constant. It'll also have a Collection.
     def self.inherited(subclass) # rubocop:disable Metrics/MethodLength
       # Active Record Type setup
-      klass = Class.new(RemoteRecord::Type) { @@parent = subclass }
+      klass = Class.new(RemoteRecord::Type)
       klass.class_eval do
-        def self.config
-          @@config ||= Config.defaults
-        end
-
-        def self.config=(config)
-          @@config = config
-        end
-
-        def self.[](config)
+        self.parent = subclass
+        def self.[](config_override)
           Class.new(self).tap do |configured_type|
-            configured_type.class_eval do
-              @@config = Config.defaults.merge(config)
-            end
+            configured_type.config.merge(config_override)
           end
         end
 
         def cast(remote_resource_id)
-          return remote_resource_id if remote_resource_id.is_a? @@parent
+          return remote_resource_id if remote_resource_id.is_a?(parent)
 
-          @@parent.new(remote_resource_id, @@config)
+          parent.new(remote_resource_id, self.config)
         end
       end
       subclass.const_set :Type, klass

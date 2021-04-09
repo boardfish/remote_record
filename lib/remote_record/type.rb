@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
+require_relative './config'
+
 module RemoteRecord
   # RemoteRecord uses the Active Record Types system to serialize to and from a
   # remote resource.
   class Type < ActiveRecord::Type::Value
+    class_attribute :config, default: RemoteRecord::Config.defaults, instance_writer: false, instance_predicate: false
+    class_attribute :parent, instance_writer: false, instance_predicate: false
+
     def type
       :string
     end
