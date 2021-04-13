@@ -53,8 +53,8 @@ module RemoteRecord
       self
     end
 
-    def ==(o)
-      o.to_h == @options
+    def ==(other)
+      other.to_h == @options
     end
   end
 end
