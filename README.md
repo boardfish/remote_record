@@ -9,7 +9,7 @@ Every API speaks a different language. Maybe it's REST, maybe it's SOAP, maybe
 it's GraphQL. Maybe it's got its own Ruby client, or maybe you need to roll your
 own. But what if you could just pretend it existed in your database?
 
-Remote Record provides a consistent ActiveRecord inspired interface for all of
+Remote Record provides a consistent Active Record-inspired interface for all of
 your application's APIs. Store remote resources by ID, and Remote Record will
 let you access objects containing their attributes from the API. Whether you're
 dealing with a user on GitHub, a track on Spotify, a place on Google Maps, or a
@@ -83,7 +83,7 @@ Calling `remote_record` in addition to this lets you set some options:
 | id_field      | `:remote_resource_id`    | The field on the reference that contains the remote resource ID                                                                                                                    |
 | authorization | `''`                     | An object that can be used by the remote record class to authorize a request. This can be a value, or a proc that returns a value that can be used within the remote record class. |
 | memoize       | true                     | Whether reference instances should memoize the response that populates them                                                                                                        |
-| transform     | []                       | Whether the response should be put through a transformer (under `RemoteRecord::Transformers`). Currently, only `[:snake_case]` is available.                                         |
+| transform     | []                       | Whether the response should be put through a transformer (under `RemoteRecord::Transformers`). See `lib/remote_record/transformers` for options.                                   |
 
 ```ruby
 module GitHub
@@ -103,20 +103,13 @@ module GitHub
 end
 ```
 
-If your API doesn't require authentication at all, you don't even need to
+If the default behavior suits you just fine, you don't even need to
 configure it. So at its best, Remote Record can be as lightweight as:
 
 ```ruby
 class JsonPlaceholderAPIReference < ApplicationRecord
   include RemoteRecord
-  # Falls back to the defaults, so it's equivalent to then calling:
-  # remote_record do |c|
-    # c.authorization proc { }
-    # c.id_field :remote_resource_id
-    # c.klass RemoteRecord::JsonPlaceholderAPI, # Inferred from module and class name
-    # c.memoize true
-    # c.transform []
-  # end
+  remote_record
 end
 ```
 
@@ -146,7 +139,7 @@ Remote Record also provides extensions to Active Record scopes. You can call
 will use a single request per resource, which isn't often optimal.
 
 Implement the `Collection` class under your remote record class to fetch
-multiple records from the API in a single request. `all` should return an array
+multiple records from the API in fewer requests. `all` should return an array
 of references.
 
 Inheriting from `RemoteRecord::Collection` grants you some convenience methods
@@ -219,6 +212,9 @@ Now you can call `remote.where` on remote reference classes that use
 GitHub::UserReference.remote.where('q=tom+repos:%3E42+followers:%3E1000')
 ```
 
+*Note that the query we're expecting here comes from the Octokit gem. Your API
+client might have a nicer interface.*
+
 It's recommended that you include something in `where` to filter incoming
 params. Ideally, you want to expose an interface that's as ActiveRecord-like as
 possible, e.g.:
@@ -227,14 +223,14 @@ possible, e.g.:
 GitHub::UserReference.remote_where(q: 'tom', repos: '>42', followers: '>1000')
 ```
 
-It's recommended that you write a `Transformer` to do this. Check out
-`RemoteRecord::Transformers::SnakeCase` for an example.
+You can use or write a `Transformer` to do this. Check out the
+`RemoteRecord::Transformers` module for examples.
 
 ### `initial_attrs`
 
-Behind the scenes, `remote_all` initializes references with a set of
-`initial_attrs`. You can do the same! If you've already fetched the data for an
-object, set it via `attrs`, like this:
+Behind the scenes, `match_remote_resources` sets the remote instance's `attrs`.
+You can do the same! If you've already fetched the data for an object, set it
+via `attrs`, like this:
 
 ```ruby
 todo = { id: 1, title: 'Hello world' }

@@ -18,10 +18,16 @@ module RemoteRecord
           raise NotImplementedError.new, 'The remote record does not implement #get.'
         end
 
+        # Register the field as an Active Record attribute of the remote record
+        # class's type
         attribute field, klass::Type[base_config].new
+        # Define the #remote scope, which returns a Collection for the class
         define_singleton_method(:remote) do |id_field = field, config: nil|
           klass::Collection.new(all, config, id: id_field)
         end
+        # Define the #remote accessor for instances - this uses the Active
+        # Record type, but adds a reference to the parent object into the config
+        # to be used in authorization.
         define_method(:remote) do |id_field = field|
           self[id_field].tap { |record| record.remote_record_config.merge!(authorization_source: self) }
         end
