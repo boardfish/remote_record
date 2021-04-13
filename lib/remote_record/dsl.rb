@@ -34,6 +34,8 @@ module RemoteRecord
       # Define the #remote scope, which returns a Collection for the given
       # Remote Record class
       def define_remote_scope(base, klass, field_name)
+        return if base.respond_to?(:remote)
+
         base.define_singleton_method(:remote) do |id_field = field_name, config: nil|
           klass::Collection.new(all, config, id: id_field)
         end
@@ -43,6 +45,8 @@ module RemoteRecord
       # Record type, but adds a reference to the parent object into the config
       # to be used in authorization.
       def define_remote_accessor(base, field_name)
+        return if base.instance_methods(false).include?(:remote)
+
         base.define_method(:remote) do |id_field = field_name|
           self[id_field].tap { |record| record.remote_record_config.merge!(authorization_source: self) }
         end
