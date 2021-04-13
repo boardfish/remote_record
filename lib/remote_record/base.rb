@@ -7,22 +7,9 @@ module RemoteRecord
 
     # When you inherit from `Base`, it'll set up an Active Record Type for you
     # available on its Type constant. It'll also have a Collection.
-    def self.inherited(subclass) # rubocop:disable Metrics/MethodLength
+    def self.inherited(subclass)
       # Active Record Type setup
-      klass = Class.new(RemoteRecord::Type) do |type|
-        type.parent = subclass
-        def self.[](config_override)
-          Class.new(self).tap do |configured_type|
-            configured_type.config = config_override
-          end
-        end
-
-        def cast(remote_resource_id)
-          return remote_resource_id if remote_resource_id.is_a?(parent)
-
-          parent.new(remote_resource_id, config)
-        end
-      end
+      klass = RemoteRecord::Type.for(subclass)
       subclass.const_set :Type, klass
       subclass.const_set :Collection, Class.new(RemoteRecord::Collection) unless subclass.const_defined? :Collection
       super

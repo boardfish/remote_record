@@ -26,5 +26,20 @@ module RemoteRecord
 
       representation.to_s
     end
+
+    def self.for(remote_record_class)
+      Class.new(self) do |type|
+        type.parent = remote_record_class
+        def self.[](config_override)
+          Class.new(self).tap { |configured_type| configured_type.config = config_override }
+        end
+
+        def cast(remote_resource_id)
+          return remote_resource_id if remote_resource_id.is_a?(parent)
+
+          parent.new(remote_resource_id, config)
+        end
+      end
+    end
   end
 end
