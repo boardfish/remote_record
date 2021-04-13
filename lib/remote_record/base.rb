@@ -9,8 +9,7 @@ module RemoteRecord
     # available on its Type constant. It'll also have a Collection.
     def self.inherited(subclass)
       # Active Record Type setup
-      klass = RemoteRecord::Type.for(subclass)
-      subclass.const_set :Type, klass
+      subclass.const_set :Type, RemoteRecord::Type.for(subclass)
       subclass.const_set :Collection, Class.new(RemoteRecord::Collection) unless subclass.const_defined? :Collection
       super
     end
