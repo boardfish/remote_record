@@ -8,7 +8,7 @@ http_interactions:
       string: ''
     headers:
       User-Agent:
-      - Faraday v1.1.0
+      - Faraday v1.0.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -19,7 +19,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 13 Jan 2021 17:32:40 GMT
+      - Tue, 23 Mar 2021 11:17:56 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -27,8 +27,8 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=dbff173a693f0b5bc2f82773053f3e5a31610559160; expires=Fri, 12-Feb-21
-        17:32:40 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      - __cfduid=d297e9455837ac1d274280e2cd4826fcd1616498276; expires=Thu, 22-Apr-21
+        11:17:56 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
       X-Powered-By:
       - Express
       X-Ratelimit-Limit:
@@ -36,7 +36,7 @@ http_interactions:
       X-Ratelimit-Remaining:
       - '999'
       X-Ratelimit-Reset:
-      - '1610158777'
+      - '1614181274'
       Vary:
       - Origin, Accept-Encoding
       Access-Control-Allow-Credentials:
@@ -56,19 +56,21 @@ http_interactions:
       Cf-Cache-Status:
       - HIT
       Age:
-      - '7585'
+      - '11865'
       Cf-Request-Id:
-      - '079e67992d00000c6dceb94000000001'
+      - '0900674eb3000040d79f1ee000000001'
       Expect-Ct:
       - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
       Report-To:
-      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=oL1LLA5oJBfz1utkRjINLmCi86CY3pZfmSr00Iji3DNBaopWhaarFkFcBLCCk9DApSbQuLakpnU9M0m%2Fxd%2BRcTaRbHbCQEcF67crh7myS3CUKAeoYJfYSsMfDQGt"}],"group":"cf-nel","max_age":604800}'
+      - '{"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=qJMyG5LuZjzB3OTNaBgrfzfrodMvv%2FLFYR2ScTNAoP9RTRcGsATE3K2WMMn0ZsT7i9%2F5J829eeEUl%2FBkEZxjMyCa8infFP3Bp4oJ0zKXSfbuXYocmj9jKcIFRxNM"}]}'
       Nel:
       - '{"report_to":"cf-nel","max_age":604800}'
       Server:
       - cloudflare
       Cf-Ray:
-      - 6110dba1edf50c6d-AMS
+      - 634741911cc540d7-LHR
+      Alt-Svc:
+      - h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |-
@@ -1274,5 +1276,5 @@ http_interactions:
             "completed": false
           }
         ]
-  recorded_at: Wed, 13 Jan 2021 17:32:40 GMT
+  recorded_at: Tue, 23 Mar 2021 11:17:56 GMT
 recorded_with: VCR 6.0.0

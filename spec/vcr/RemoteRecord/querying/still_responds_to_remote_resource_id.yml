@@ -19,7 +19,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 22 Mar 2021 14:56:56 GMT
+      - Mon, 22 Mar 2021 11:15:02 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -27,8 +27,8 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=dfad2b83f1990bcd3a41be07d8837411b1616425016; expires=Wed, 21-Apr-21
-        14:56:56 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      - __cfduid=d7cab30ec58f81b0070762d9e56a109871616411702; expires=Wed, 21-Apr-21
+        11:15:02 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
       X-Powered-By:
       - Express
       X-Ratelimit-Limit:
@@ -56,19 +56,19 @@ http_interactions:
       Cf-Cache-Status:
       - HIT
       Age:
-      - '28421'
+      - '15107'
       Cf-Request-Id:
-      - '08fc0972e70000f41f83846000000001'
+      - '08fb3e4e35000040c5e2bd6000000001'
       Expect-Ct:
       - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
       Report-To:
-      - '{"group":"cf-nel","endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=TVgEfYTMbas80rNiwBlHeK3YnnxYKi74vpWa1ZfpEPwNNpZXhUs7AOHY%2FvKcTPDkyGTvbJZHWqc6I8pipVXGy8rGZuQCeT9dKNDDYpa1rw5DdhJe7%2BZQMnOzW4zx"}],"max_age":604800}'
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=w5pKX5%2FqT05%2BfUYMmmvDwctmGAEK4QjRm0EvBdZTkqr6YQ2wVfitLKATJJ1Xdja4xX6xuO566GneKPhfDqx6mGi%2BD3rsOmy6%2BNZXP3QJPncRon9NdbVxJmCHZF6o"}],"group":"cf-nel","max_age":604800}'
       Nel:
       - '{"max_age":604800,"report_to":"cf-nel"}'
       Server:
       - cloudflare
       Cf-Ray:
-      - 634044fe3983f41f-LHR
+      - 633efff6bf4640c5-LHR
       Alt-Svc:
       - h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400
     body:
@@ -80,5 +80,5 @@ http_interactions:
           "title": "delectus aut autem",
           "completed": false
         }
-  recorded_at: Mon, 22 Mar 2021 14:56:56 GMT
+  recorded_at: Mon, 22 Mar 2021 11:15:02 GMT
 recorded_with: VCR 6.0.0

@@ -7,6 +7,8 @@ http_interactions:
       encoding: US-ASCII
       string: ''
     headers:
+      Authorization:
+      - authz header
       User-Agent:
       - Faraday v1.0.1
       Accept-Encoding:
@@ -19,7 +21,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 22 Mar 2021 14:56:56 GMT
+      - Mon, 22 Mar 2021 15:49:30 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -27,8 +29,8 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=dfad2b83f1990bcd3a41be07d8837411b1616425016; expires=Wed, 21-Apr-21
-        14:56:56 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      - __cfduid=d99ebc018e1f21e17607a5015a815b8461616428170; expires=Wed, 21-Apr-21
+        15:49:30 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
       X-Powered-By:
       - Express
       X-Ratelimit-Limit:
@@ -56,19 +58,19 @@ http_interactions:
       Cf-Cache-Status:
       - HIT
       Age:
-      - '28421'
+      - '2774'
       Cf-Request-Id:
-      - '08fc0972e70000f41f83846000000001'
+      - '08fc3993de0000e6103c994000000001'
       Expect-Ct:
       - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
       Report-To:
-      - '{"group":"cf-nel","endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=TVgEfYTMbas80rNiwBlHeK3YnnxYKi74vpWa1ZfpEPwNNpZXhUs7AOHY%2FvKcTPDkyGTvbJZHWqc6I8pipVXGy8rGZuQCeT9dKNDDYpa1rw5DdhJe7%2BZQMnOzW4zx"}],"max_age":604800}'
+      - '{"group":"cf-nel","endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=DW0v3FpHy38x2BcGWn8tozdD6DeTGTQ3wik%2F%2F7GP%2FPFFE3LElmEONYJTYEQkauc6nB9Gz79sNgxxJbtF1tVuzgTZIT0gaYCn2HR8bdV4PBeyTUUcMHz67p%2FP2F%2Bc"}],"max_age":604800}'
       Nel:
       - '{"max_age":604800,"report_to":"cf-nel"}'
       Server:
       - cloudflare
       Cf-Ray:
-      - 634044fe3983f41f-LHR
+      - 634091ffcadde610-LHR
       Alt-Svc:
       - h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400
     body:
@@ -80,5 +82,5 @@ http_interactions:
           "title": "delectus aut autem",
           "completed": false
         }
-  recorded_at: Mon, 22 Mar 2021 14:56:56 GMT
+  recorded_at: Mon, 22 Mar 2021 15:49:30 GMT
 recorded_with: VCR 6.0.0

@@ -2,13 +2,13 @@
 http_interactions:
 - request:
     method: get
-    uri: https://jsonplaceholder.typicode.com/todos
+    uri: https://jsonplaceholder.typicode.com/todos/
     body:
       encoding: US-ASCII
       string: ''
     headers:
       User-Agent:
-      - Faraday v1.1.0
+      - Faraday v1.0.1
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
       Accept:
@@ -19,7 +19,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Wed, 13 Jan 2021 17:32:40 GMT
+      - Mon, 22 Mar 2021 10:51:57 GMT
       Content-Type:
       - application/json; charset=utf-8
       Transfer-Encoding:
@@ -27,8 +27,8 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=d2aa90257e614fe756ff6d0f24a5034651610559160; expires=Fri, 12-Feb-21
-        17:32:40 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      - __cfduid=d5ccc86dda75dfc9c2d98b54d91a7c4361616410317; expires=Wed, 21-Apr-21
+        10:51:57 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
       X-Powered-By:
       - Express
       X-Ratelimit-Limit:
@@ -36,7 +36,7 @@ http_interactions:
       X-Ratelimit-Remaining:
       - '999'
       X-Ratelimit-Reset:
-      - '1610158777'
+      - '1614049175'
       Vary:
       - Origin, Accept-Encoding
       Access-Control-Allow-Credentials:
@@ -56,19 +56,21 @@ http_interactions:
       Cf-Cache-Status:
       - HIT
       Age:
-      - '7585'
+      - '25790'
       Cf-Request-Id:
-      - '079e6797850000bf8cef286000000001'
+      - '08fb292bd20000dbd7503e4000000001'
       Expect-Ct:
       - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
       Report-To:
-      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=CiR7HAG5LqDy0vByUVA%2BuYge9ixjTtzNxBzAEsBszCb9w7aJrpbsWE%2BYeA2ksaUttI9VeDhNG93iTd7hfxmy2tRb0O9j4cxhDhHXoaFb1AcwsozD2B5CMdd2QXsL"}],"group":"cf-nel","max_age":604800}'
+      - '{"group":"cf-nel","endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=ctJNhmWeE%2F%2Ff1iEOkqDFjHE%2FTuPdxqNB%2BP6I%2FpUX8tEQu2Pt0uu7fw6LN8xeFa%2F7MOHnFnrKlbAj4iRdRdy3TuEVB8QNKwDggI9jUH2h3DDlQurrZoIJo0udJFDp"}],"max_age":604800}'
       Nel:
       - '{"report_to":"cf-nel","max_age":604800}'
       Server:
       - cloudflare
       Cf-Ray:
-      - 6110db9f3878bf8c-AMS
+      - 633ede261cc3dbd7-LHR
+      Alt-Svc:
+      - h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400
     body:
       encoding: ASCII-8BIT
       string: |-
@@ -1274,5 +1276,86 @@ http_interactions:
             "completed": false
           }
         ]
-  recorded_at: Wed, 13 Jan 2021 17:32:40 GMT
+  recorded_at: Mon, 22 Mar 2021 10:51:57 GMT
+- request:
+    method: get
+    uri: https://jsonplaceholder.typicode.com/todos/1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v1.0.1
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 22 Mar 2021 10:51:57 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Set-Cookie:
+      - __cfduid=dea9c4e0babbf78fa3726879d116dc3fd1616410317; expires=Wed, 21-Apr-21
+        10:51:57 GMT; path=/; domain=.typicode.com; HttpOnly; SameSite=Lax
+      X-Powered-By:
+      - Express
+      X-Ratelimit-Limit:
+      - '1000'
+      X-Ratelimit-Remaining:
+      - '999'
+      X-Ratelimit-Reset:
+      - '1616194926'
+      Vary:
+      - Origin, Accept-Encoding
+      Access-Control-Allow-Credentials:
+      - 'true'
+      Cache-Control:
+      - max-age=43200
+      Pragma:
+      - no-cache
+      Expires:
+      - "-1"
+      X-Content-Type-Options:
+      - nosniff
+      Etag:
+      - W/"53-hfEnumeNh6YirfjyjaujcOPPT+s"
+      Via:
+      - 1.1 vegur
+      Cf-Cache-Status:
+      - HIT
+      Age:
+      - '13722'
+      Cf-Request-Id:
+      - '08fb292c1f0000539ed2871000000001'
+      Expect-Ct:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report?s=SYIK1BcQBPGMwrcleiGmmLF7Rm6vM5vdevNJWD7jYTXgFcXPH%2BvZjWPxWFKEKwgiQZe9vYyELxgUnTubxk0dddFpVKmI65zkQOWy1PojgRptMslxLAQ9lZXMhJ1d"}],"max_age":604800,"group":"cf-nel"}'
+      Nel:
+      - '{"max_age":604800,"report_to":"cf-nel"}'
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 633ede269f77539e-LHR
+      Alt-Svc:
+      - h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |-
+        {
+          "userId": 1,
+          "id": 1,
+          "title": "delectus aut autem",
+          "completed": false
+        }
+  recorded_at: Mon, 22 Mar 2021 10:51:57 GMT
 recorded_with: VCR 6.0.0

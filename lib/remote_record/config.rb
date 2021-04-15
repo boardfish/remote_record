@@ -7,7 +7,7 @@ module RemoteRecord
   # defaults of the remote record class and the overrides set when
   # `remote_record` is called.
   class Config
-    OPTIONS = %i[remote_record_class authorization memoize id_field transform].freeze
+    OPTIONS = %i[authorization authorization_source memoize id_field transform].freeze
 
     def initialize(**options)
       @options = options
@@ -16,6 +16,7 @@ module RemoteRecord
     def self.defaults
       new(
         authorization: '',
+        authorization_source: nil,
         memoize: true,
         id_field: :remote_resource_id,
         transform: []
@@ -41,9 +42,19 @@ module RemoteRecord
       @options
     end
 
-    def merge(**overrides)
+    def merge(config = nil, **overrides)
+      @options.yield_self { |options| options.merge(**(config || {}).to_h) }
+              .yield_self { |options| options.merge(**overrides) }
+    end
+
+    def merge!(config = nil, **overrides)
+      @options.merge!(**config.to_h) if config.present?
       @options.merge!(**overrides)
       self
+    end
+
+    def ==(other)
+      other.to_h == @options
     end
   end
 end

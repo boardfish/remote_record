@@ -8,12 +8,16 @@ module RemoteRecord
   module DSL
     extend ActiveSupport::Concern
     class_methods do
-      def remote_record(remote_record_class: nil)
-        klass = RemoteRecord::ClassLookup.new(self).remote_record_class(remote_record_class)
-        config = RemoteRecord::Config.new(remote_record_class: klass)
-        config = yield(config) if block_given?
-        DSLPrivate.validate_config(config)
-        define_singleton_method(:remote_record_config) { config }
+      def remote_record(remote_record_class: nil, field: :remote_resource_id)
+        klass = DSLPrivate.lookup_and_validate_class(self, remote_record_class)
+        base_config = RemoteRecord::Config.defaults
+        base_config = yield(base_config) if block_given?
+        # Register the field as an Active Record attribute of the remote record
+        # class's type
+        attribute field, klass::Type[base_config].new
+
+        DSLPrivate.define_remote_scope(self, klass, field)
+        DSLPrivate.define_remote_accessor(self, field)
       end
     end
   end
@@ -21,14 +25,39 @@ module RemoteRecord
   # Methods private to the DSL module.
   module DSLPrivate
     class << self
-      def responds_to_get?(klass)
-        klass.instance_methods(false).include? :get
+      def lookup_and_validate_class(klass, override)
+        RemoteRecord::ClassLookup.new(klass).remote_record_class(override).tap do |found_klass|
+          validate_responds_to_get(found_klass)
+        end
       end
 
-      def validate_config(config)
-        klass = RemoteRecord::ClassLookup.new(self.class.to_s)
-                                         .remote_record_class(config.to_h[:remote_record_class].to_s)
+      # Define the #remote scope, which returns a Collection for the given
+      # Remote Record class
+      def define_remote_scope(base, klass, field_name)
+        return if base.respond_to?(:remote)
+
+        base.define_singleton_method(:remote) do |id_field = field_name, config: nil|
+          klass::Collection.new(all, config, id: id_field)
+        end
+      end
+
+      # Define the #remote accessor for instances - this uses the Active
+      # Record type, but adds a reference to the parent object into the config
+      # to be used in authorization.
+      def define_remote_accessor(base, field_name)
+        return if base.instance_methods(false).include?(:remote)
+
+        base.define_method(:remote) do |id_field = field_name|
+          self[id_field].tap { |record| record.remote_record_config.merge!(authorization_source: self) }
+        end
+      end
+
+      def validate_responds_to_get(klass)
         raise NotImplementedError.new, 'The remote record does not implement #get.' unless responds_to_get?(klass)
+      end
+
+      def responds_to_get?(klass)
+        klass.instance_methods(false).include? :get
       end
     end
   end

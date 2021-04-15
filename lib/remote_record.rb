@@ -2,8 +2,11 @@
 
 require 'active_support/concern'
 require 'active_support/rescuable'
+require 'active_record/type'
+require 'remote_record/type'
 require 'remote_record/base'
 require 'remote_record/class_lookup'
+require 'remote_record/collection'
 require 'remote_record/config'
 require 'remote_record/dsl'
 require 'remote_record/reference'

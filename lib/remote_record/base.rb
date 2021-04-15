@@ -5,17 +5,27 @@ module RemoteRecord
   class Base
     include ActiveSupport::Rescuable
 
-    def self.default_config
-      Config.defaults.merge(remote_record_class: self)
+    # When you inherit from `Base`, it'll set up an Active Record Type for you
+    # available on its Type constant. It'll also have a Collection.
+    def self.inherited(subclass)
+      subclass.const_set :Type, RemoteRecord::Type.for(subclass)
+      subclass.const_set :Collection, Class.new(RemoteRecord::Collection) unless subclass.const_defined? :Collection
+      super
     end
+    attr_reader :remote_resource_id
+    attr_accessor :remote_record_config
 
-    def initialize(reference, options = default_config, initial_attrs = {})
-      @reference = reference
-      @options = options
+    def initialize(remote_resource_id,
+                   remote_record_config = Config.defaults,
+                   initial_attrs = {})
+      @remote_resource_id = remote_resource_id
+      @remote_record_config = remote_record_config
       @attrs = HashWithIndifferentAccess.new(initial_attrs)
+      @fetched = initial_attrs.present?
     end
 
     def method_missing(method_name, *_args, &_block)
+      fetch unless @remote_record_config.memoize && @fetched
       transform(@attrs).fetch(method_name)
     rescue KeyError
       super
@@ -29,25 +39,25 @@ module RemoteRecord
       raise NotImplementedError.new, '#get should return a hash of data that represents the remote record.'
     end
 
-    def self.all
-      raise NotImplementedError.new, '#all should return an array of hashes of data that represent remote records.'
-    end
-
-    def self.where(_params)
-      raise NotImplementedError.new, '#where should return an array of hashes of data that represent remote records.'
-    end
-
     def fetch
       @attrs.update(get)
+      @fetched = true
     end
 
     def attrs=(new_attrs)
       @attrs.update(new_attrs)
     end
 
+    def fresh
+      fetch
+      self
+    end
+
     private
 
     def transform(data)
+      return data unless transformers.any?
+
       transformers.reduce(data) do |transformed_data, transformer|
         transformer.new(transformed_data).transform
       end
@@ -55,18 +65,14 @@ module RemoteRecord
 
     # Robots in disguise.
     def transformers
-      @options.transform.map do |transformer_name|
+      @remote_record_config.transform.map do |transformer_name|
         "RemoteRecord::Transformers::#{transformer_name.to_s.camelize}".constantize
       end
     end
 
     def authorization
-      authz = @options.authorization
-      authz.respond_to?(:call) ? authz.call(@reference, @options) : authz
-    end
-
-    def remote_resource_id
-      @reference.send(@options.id_field)
+      authz = @remote_record_config.authorization
+      authz.respond_to?(:call) ? authz.call(@remote_record_config.authorization_source) : authz
     end
   end
 end
