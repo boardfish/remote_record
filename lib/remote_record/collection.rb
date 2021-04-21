@@ -39,9 +39,10 @@ module RemoteRecord
 
     def match_remote_resources(response)
       @relation.map do |record|
-        record.remote.attrs = response.find do |resource|
+        prefetched_record = response.find do |resource|
           yield(resource).to_s == record.public_send(@id_field).remote_resource_id
-        end || {}
+        end
+        record.remote.attrs = prefetched_record if prefetched_record.present?
         record
       end
     end
