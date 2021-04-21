@@ -41,7 +41,7 @@ module RemoteRecord
       @relation.map do |record|
         record.remote.attrs = response.find do |resource|
           yield(resource).to_s == record.public_send(@id_field).remote_resource_id
-        end
+        end || {}
         record
       end
     end
