@@ -43,6 +43,7 @@ module RemoteRecord
           yield(resource).to_s == record.public_send(@id_field).remote_resource_id
         end
         next nil unless prefetched_record.present?
+
         record.remote.attrs = prefetched_record
         record
       end.compact
