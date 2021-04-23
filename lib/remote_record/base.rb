@@ -46,6 +46,7 @@ module RemoteRecord
 
     def attrs=(new_attrs)
       @attrs.update(new_attrs)
+      @fetched = true
     end
 
     def fresh
