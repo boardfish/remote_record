@@ -281,6 +281,11 @@ RSpec.describe RemoteRecord do
     end
 
     context 'when there is an implementation for all on the collection' do
+      before do
+        reference_const_name.constantize.insert_all((1..3).map do |id|
+          { remote_resource_id: id, created_at: Time.now, updated_at: Time.now }
+        end)
+      end
       let(:initialize_record) do
         stub_const(record_const_name, Class.new(RemoteRecord::Base) do
           def get
@@ -315,9 +320,6 @@ RSpec.describe RemoteRecord do
         end)
       end
       it 'returns all records present in the database', :vcr do
-        reference_const_name.constantize.insert_all((1..3).map do |id|
-          { remote_resource_id: id, created_at: Time.now, updated_at: Time.now }
-        end)
         expect(batch_fetch.length).to eq(3)
       end
 
@@ -332,6 +334,11 @@ RSpec.describe RemoteRecord do
 
       it 'returns records that respond to attributes', :vcr do
         expect(batch_fetch.all? { |reference| reference.remote.respond_to? :title }).to eq(true)
+      end
+
+      it 'does not make another request when the attribute is called', :vcr do
+        batch_fetch.first.remote.title
+        expect(a_request(:get, 'https://jsonplaceholder.typicode.com/todos')).to have_been_made.once
       end
     end
 
