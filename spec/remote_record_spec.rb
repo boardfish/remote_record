@@ -282,7 +282,7 @@ RSpec.describe RemoteRecord do
 
     context 'when there is an implementation for all on the collection' do
       before do
-        reference_const_name.constantize.insert_all((1..3).map do |id|
+        reference_const_name.constantize.insert_all((0..3).map do |id|
           { remote_resource_id: id, created_at: Time.now, updated_at: Time.now }
         end)
       end
@@ -319,7 +319,8 @@ RSpec.describe RemoteRecord do
           end
         end)
       end
-      it 'returns all records present in the database', :vcr do
+
+      it 'returns only records present in the database', :vcr do
         expect(batch_fetch.length).to eq(3)
       end
 
